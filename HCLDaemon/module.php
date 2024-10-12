@@ -22,7 +22,7 @@ class HomeConnectLocalDaemon extends IPSModule
         parent::ApplyChanges();
 
         $topic = $this->ReadPropertyString('Topic');
-        $this->SetReceiveDataFilter('.*' . $topic . '.*');
+        $this->SetReceiveDataFilter($topic . '/LWT');
     }
 
     public function ReceiveData($JSONString)

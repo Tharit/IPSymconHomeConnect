@@ -1,7 +1,11 @@
 <?php
 
+require_once(__DIR__ . '/../libs/ModuleUtilities.php');
+
 class HomeConnectLocalOven extends IPSModule
 {
+    use ModuleUtilities;
+
     public function Create()
     {
         //Never delete this line!
@@ -14,6 +18,10 @@ class HomeConnectLocalOven extends IPSModule
 
         // variables
         $this->RegisterVariableBoolean("Connected", "Connected");
+        
+        // buffers
+        $this->MUSetBuffer('DaemonConnected', false);
+        $this->MUSetBuffer('DeviceConnected', false);
     }
 
     public function ApplyChanges()
@@ -22,7 +30,9 @@ class HomeConnectLocalOven extends IPSModule
         parent::ApplyChanges();
 
         $topic = $this->ReadPropertyString('Topic');
-        $this->SetReceiveDataFilter('.*' . $topic . '.*');
+        $filter = array_slice(explode('/', $topic), 0, -1) . '/LWT|' . $topic . '/.*';
+        $this->SendDebug('Filter', $filter);
+        $this->SetReceiveDataFilter($filter);
     }
 
     public function ReceiveData($JSONString)
@@ -35,7 +45,15 @@ class HomeConnectLocalOven extends IPSModule
         $Buffer = $data;
 
         if (fnmatch('*/LWT', $Buffer->Topic)) {
-            $this->SetValue("Connected", $Buffer->Payload === 'online' ? true : false);
+            $connected = $Buffer->Payload === 'online' ? true : false;
+            if($Buffer->Topic === $this->ReadPropertyString('Topic') . '/LWT') {
+                $this->MUSetBuffer('DeviceConnected', $connected);
+                $connected = $connected && $this->MUGetBuffer('DaemonConnected');
+            } else {
+                $this->MUSetBuffer('DaemonConnected', $connected);
+                $connected = $connected && $this->MUGetBuffer('DeviceConnected');
+            }
+            $this->SetValue("Connected", $connected);
         }
     }
 
