@@ -1,0 +1,14 @@
+{
+	"id": "{DD4F933D-D121-4410-AAB4-6BE60742CAC9}",
+	"name": "Home Connect Dryer",
+	"type": 3,
+	"vendor": "Home Connect",
+	"aliases":
+	[
+	],
+	"parentRequirements": ["{043EA491-0325-4ADD-8FC2-A30C8EEB4D3F}"],
+	"childRequirements": [],
+	"implemented": ["{7F7632D9-FA40-4F38-8DEA-C83CD4325A32}"],
+	"prefix": "HCL",
+    "url": "https://github.com/tharit/IPSymconHomeConnect"
+}
