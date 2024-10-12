@@ -18,7 +18,9 @@ class HomeConnectLocalOven extends IPSModule
 
         // variables
         $this->RegisterVariableBoolean("Connected", "Connected");
-        
+        $this->RegisterVariableString("State", "State");
+        $this->RegisterVariableFloat("CurrentCavityTemperature", "Temperature", "~Temperature");
+
         // buffers
         $this->MUSetBuffer('DaemonConnected', false);
         $this->MUSetBuffer('DeviceConnected', false);
@@ -54,6 +56,38 @@ class HomeConnectLocalOven extends IPSModule
                 $connected = $connected && $this->MUGetBuffer('DeviceConnected');
             }
             $this->SetValue("Connected", $connected);
+        } else {
+            $payload = json_decode($Buffer->Payload);
+
+            $this->SetValue("Temperature", $payload->CurrentCavityTemperature);
+            
+            if($payload->DoorState !== 'Closed') {
+                $state = 'Door open';
+            } else if($payload->PowerState !== 'Run') {
+                // Standby
+                $state = $payload->PowerState;
+            } else {
+                if($payload->OperationState !== 'Inactive') {
+                    if($payload->AlarmClock) {
+                        $state = $payload->AlarmClock . "|" . $payload->AlarmClockElapsed;
+                    } else if(!$payload->PreheatFinished) {
+                        $state = "Preheating (" . $payload->CurrentCavityTemperature . '/' . $payload->CavityHeatup . ')';
+                    } else {
+                        $state = 'Running (' . $payload->AlarmClockElapsed . ')';
+                    }
+                } else {
+                    $state = $payload->OperationState;
+                }
+            }
+            $this->SetValue("State", $state);
+            // PowerState
+            // OperationState
+            // PreheatFinished
+            // DoorState
+            // CavityHeatup
+            // ProgramFinished
+            // AlarmClock
+            // AlarmClockElapsed
         }
     }
 
