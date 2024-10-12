@@ -1,6 +1,6 @@
 <?php
 
-class HCLDryer extends IPSModule
+class HomeConnectLocalDryer extends IPSModule
 {
     public function Create()
     {

@@ -1,6 +1,6 @@
 <?php
 
-class HCLHood extends IPSModule
+class HomeConnectLocalHood extends IPSModule
 {
     public function Create()
     {

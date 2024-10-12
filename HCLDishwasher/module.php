@@ -1,6 +1,6 @@
 <?php
 
-class HCLDishwasher extends IPSModule
+class HomeConnectLocalDishwasher extends IPSModule
 {
     public function Create()
     {

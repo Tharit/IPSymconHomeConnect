@@ -1,6 +1,6 @@
 <?php
 
-class HCLDaemon extends IPSModule
+class HomeConnectLocalDaemon extends IPSModule
 {
     public function Create()
     {

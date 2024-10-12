@@ -1,6 +1,6 @@
 <?php
 
-class HCLHob extends IPSModule
+class HomeConnectLocalHob extends IPSModule
 {
     public function Create()
     {

@@ -1,6 +1,6 @@
 <?php
 
-class HCLWasher extends IPSModule
+class HomeConnectLocalWasher extends IPSModule
 {
     public function Create()
     {

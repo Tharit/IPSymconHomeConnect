@@ -1,6 +1,6 @@
 <?php
 
-class HCLOven extends IPSModule
+class HomeConnectLocalOven extends IPSModule
 {
     public function Create()
     {
