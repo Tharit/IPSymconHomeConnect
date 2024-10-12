@@ -59,35 +59,38 @@ class HomeConnectLocalOven extends IPSModule
         } else {
             $payload = json_decode($Buffer->Payload);
 
-            $this->SetValue("Temperature", $payload->CurrentCavityTemperature);
-            
-            if($payload->DoorState !== 'Closed') {
-                $state = 'Door open';
-            } else if($payload->PowerState !== 'Run') {
-                // Standby
-                $state = $payload->PowerState;
-            } else {
-                if($payload->OperationState !== 'Inactive') {
-                    if($payload->AlarmClock) {
-                        $state = $payload->AlarmClock . "|" . $payload->AlarmClockElapsed;
-                    } else if(!$payload->PreheatFinished) {
-                        $state = "Preheating (" . $payload->CurrentCavityTemperature . '/' . $payload->CavityHeatup . ')';
-                    } else {
-                        $state = 'Running (' . $payload->AlarmClockElapsed . ')';
-                    }
+            if(isset($payload->PowerState)) {
+
+                $this->SetValue("CurrentCavityTemperature", $payload->CurrentCavityTemperature);
+                
+                if($payload->DoorState !== 'Closed') {
+                    $state = 'Door open';
+                } else if($payload->PowerState !== 'Run') {
+                    // Standby
+                    $state = $payload->PowerState;
                 } else {
-                    $state = $payload->OperationState;
+                    if($payload->OperationState !== 'Inactive') {
+                        if($payload->AlarmClock) {
+                            $state = $payload->AlarmClock . "|" . $payload->AlarmClockElapsed;
+                        } else if(!$payload->PreheatFinished) {
+                            $state = "Preheating (" . $payload->CurrentCavityTemperature . '/' . $payload->CavityHeatup . ')';
+                        } else {
+                            $state = 'Running (' . $payload->AlarmClockElapsed . ')';
+                        }
+                    } else {
+                        $state = $payload->OperationState;
+                    }
                 }
+                $this->SetValue("State", $state);
+                // PowerState
+                // OperationState
+                // PreheatFinished
+                // DoorState
+                // CavityHeatup
+                // ProgramFinished
+                // AlarmClock
+                // AlarmClockElapsed
             }
-            $this->SetValue("State", $state);
-            // PowerState
-            // OperationState
-            // PreheatFinished
-            // DoorState
-            // CavityHeatup
-            // ProgramFinished
-            // AlarmClock
-            // AlarmClockElapsed
         }
     }
 
