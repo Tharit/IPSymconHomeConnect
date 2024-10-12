@@ -30,7 +30,7 @@ class HomeConnectLocalOven extends IPSModule
         parent::ApplyChanges();
 
         $topic = $this->ReadPropertyString('Topic');
-        $filter = array_slice(explode('/', $topic), 0, -1) . '/LWT|' . $topic . '/.*';
+        $filter = implode('/', array_slice(explode('/', $topic), 0, -1)) . '/LWT|' . $topic . '/.*';
         $this->SendDebug('Filter', $filter);
         $this->SetReceiveDataFilter($filter);
     }
