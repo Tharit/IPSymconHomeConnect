@@ -65,7 +65,7 @@ class HomeConnectLocalOven extends IPSModule
                 
                 if($payload->DoorState !== 'Closed') {
                     $state = 'Door open';
-                } else if($payload->PowerState !== 'Run') {
+                } else if($payload->PowerState !== 'On') {
                     // Standby
                     $state = $payload->PowerState;
                 } else {

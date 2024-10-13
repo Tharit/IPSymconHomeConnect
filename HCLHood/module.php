@@ -65,7 +65,7 @@ class HomeConnectLocalHood extends IPSModule
                 $this->SetValue("GreaseFilterSaturation", $payload->GreaseFilterSaturation);
                 $this->SetValue("Lighting", $payload->Lighting);
 
-                if($payload->PowerState !== 'Run') {
+                if($payload->PowerState !== 'On') {
                     // Off
                     $state = $payload->PowerState;
                 } else {
