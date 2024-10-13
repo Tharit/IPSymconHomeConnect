@@ -67,7 +67,8 @@ class HomeConnectLocalOven extends IPSModule
             if(isset($payload->PowerState)) {
 
                 $this->SetValue("CurrentCavityTemperature", $payload->CurrentCavityTemperature);
-                
+                $this->SetValue("Power", $payload->PowerState === 2 ? true : false);
+
                 if($payload->DoorState !== 'Closed') {
                     $state = 'Door open';
                 } else if($payload->PowerState !== 'On') {
@@ -75,14 +76,10 @@ class HomeConnectLocalOven extends IPSModule
                     // remap 'Standby' to Off
                     if($state === 'Standby') $state = 'Off';
                 } else {
-                    if($payload->OperationState === 'Run') {
-                        /*if($payload->AlarmClock) {
-                            $state = $payload->AlarmClock . "|" . $payload->AlarmClockElapsed;
-                        } else if(!$payload->PreheatFinished) {
-                            $state = "Preheating (" . $payload->CurrentCavityTemperature . '/' . $payload->CavityHeatup . ')';
-                        } else
-                        */
-                    // @TODO: values are initially not present, check for their existence
+                    if($payload->OperationState === 'DelayedStart') {
+                        $state = 'Start in ' . $this->FormatDuration($payload->RemainingProgramTime);
+                    } else if($payload->OperationState === 'Run') {
+                        // @TODO: values are initially not present, check for their existence
                         if($payload->Duration) {
                             $state = $this->FormatDuration($payload->RemainingProgramTime) . ' remaining';
                         } else if($payload->CurrentCavityTemperature < $payload->SetpointTemperature) {
@@ -95,20 +92,8 @@ class HomeConnectLocalOven extends IPSModule
                     } else {
                         $state = $payload->OperationState;
                     }
-
-                    // Duration
-                    // ElapsedProgramTime (including preheating)
-                    // RemainingProgramTime
                 }
                 $this->SetValue("State", $state);
-                // PowerState
-                // OperationState
-                // PreheatFinished
-                // DoorState
-                // CavityHeatup
-                // ProgramFinished
-                // AlarmClock
-                // AlarmClockElapsed
             }
         }
     }
