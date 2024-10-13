@@ -101,7 +101,7 @@ class HomeConnectLocalHood extends IPSModule
                 $this->SetValue("Program", $payload->ActiveProgram);
                 $this->SetValue("Lighting", $payload->Lighting);
                 $this->SetValue("VentingLevel", $payload->VentingLevel);
-                $this->SetValue("Power", $payload->PowerState === 2 ? true : false);
+                $this->SetValue("Power", $payload->PowerState === 'On' ? true : false);
 
                 if($payload->PowerState !== 'On') {
                     $state = $payload->PowerState;
