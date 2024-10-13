@@ -28,6 +28,7 @@ class HomeConnectLocalHood extends IPSModule
         ]);
 
         $this->RegisterProfileIntegerEx('HomeConnectLocalHood.VentingLevel', 'Venting Level', '', '', [
+            [0, 'Off',  '', -1],
             [1, '1',  '', -1],
             [2, '2',  '', -1],
             [3, '3',  '', -1]
@@ -138,7 +139,9 @@ class HomeConnectLocalHood extends IPSModule
             if(!in_array($Value, [0, 55296, 55307, 55306, 55301])) return;
             $this->StartProgram($Value);
         } else if($ident === 'VentingLevel') {
-            if($this->GetValue("Program") !== 55307) {
+            if($Value <= 0 || $Value >= 4) {
+                $this->StartProgram(0);
+            } else if($this->GetValue("Program") !== 55307) {
                 $this->StartProgram(55307, [["uid" => 55308, "value" => $Value]]);
             } else {
                 $this->SendRequest(55308, max(0, min(3, $Value)));
