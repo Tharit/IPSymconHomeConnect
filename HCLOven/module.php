@@ -66,8 +66,9 @@ class HomeConnectLocalOven extends IPSModule
                 if($payload->DoorState !== 'Closed') {
                     $state = 'Door open';
                 } else if($payload->PowerState !== 'On') {
-                    // Standby
                     $state = $payload->PowerState;
+                    // remap 'Standby' to Off
+                    if($state === 'Standby') $state = 'Off';
                 } else {
                     if($payload->OperationState !== 'Inactive') {
                         /*if($payload->AlarmClock) {
@@ -76,12 +77,15 @@ class HomeConnectLocalOven extends IPSModule
                             $state = "Preheating (" . $payload->CurrentCavityTemperature . '/' . $payload->CavityHeatup . ')';
                         } else
                         */
+                    // @TODO: values are initially not present, check for their existence
                         if($payload->RemainingProgramTime) {
                             $state = 'Running (' . $payload->RemainingProgramTime . 's remaining)';
                         } else if($payload->CurrentCavityTemperature < $payload->SetpointTemperature) {
                             $state = 'Preheating (' . floor($payload->CurrentCavityTemperature) . '/' . $payload->SetpointTemperature . ')';
-                        } else {
+                        } else if($payload->ElapsedProgramTime) {
                             $state = 'Running (' . $payload->ElapsedProgramTime . 's elapsed)';
+                        } else {
+                            $state = 'Running';
                         }
                     } else {
                         $state = $payload->OperationState;
