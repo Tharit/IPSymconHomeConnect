@@ -70,16 +70,26 @@ class HomeConnectLocalOven extends IPSModule
                     $state = $payload->PowerState;
                 } else {
                     if($payload->OperationState !== 'Inactive') {
-                        if($payload->AlarmClock) {
+                        /*if($payload->AlarmClock) {
                             $state = $payload->AlarmClock . "|" . $payload->AlarmClockElapsed;
                         } else if(!$payload->PreheatFinished) {
                             $state = "Preheating (" . $payload->CurrentCavityTemperature . '/' . $payload->CavityHeatup . ')';
+                        } else
+                        */
+                        if($payload->RemainingProgramTime) {
+                            $state = 'Running (' . $payload->RemainingProgramTime . 's remaining)';
+                        } else if($payload->CurrentCavityTemperature < $payload->SetpointTemperature) {
+                            $state = 'Preheating (' . floor($payload->CurrentCavityTemperature) . '/' . $payload->SetpointTemperature . ')';
                         } else {
-                            $state = 'Running (' . $payload->AlarmClockElapsed . ')';
+                            $state = 'Running (' . $payload->ElapsedProgramTime . 's elapsed)';
                         }
                     } else {
                         $state = $payload->OperationState;
                     }
+
+                    // Duration
+                    // ElapsedProgramTime (including preheating)
+                    // RemainingProgramTime
                 }
                 $this->SetValue("State", $state);
                 // PowerState
