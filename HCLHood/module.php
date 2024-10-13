@@ -116,12 +116,12 @@ class HomeConnectLocalHood extends IPSModule
 
             $state = $this->HCLUpdateState($payload);
             
-            if(isset($state[self::UID_SETTING_POWERSTATE])) {
+            if(isset($state[self::UID_STATUS_POWERSTATE])) {
                 
                 $program = 'N/A';
                 
                 $activeProgram = $state[self::UID_ACTIVEPROGRAM];
-                $powerState = $state[self::UID_SETTING_POWERSTATE];
+                $powerState = $state[self::UID_STATUS_POWERSTATE];
                 $ventingLevel = $state[self::UID_OPTION_VENTINGLEVEL];
 
                 if($activeProgram === self::UID_PROGRAM_AUTO) {
@@ -165,19 +165,19 @@ class HomeConnectLocalHood extends IPSModule
     public function RequestAction($Ident, $Value)
     {
         if($Ident === 'Power') {
-            $this->SendRequest(self::UID_SETTING_POWERSTATE, $Value === false ? self::VALUE_POWERSTATE_OFF : self::VALUE_POWERSTATE_ON);
+            $this->SendRequest(self::UID_STATUS_POWERSTATE, $Value === false ? self::VALUE_POWERSTATE_OFF : self::VALUE_POWERSTATE_ON);
         } else if($Ident === 'Lighting') {
             $this->SendRequest(self::UID_SETTING_LIGHTING, $Value === true ? true : false);
         } else if($Ident === 'Program') {
             if(!in_array($Value, self::UID_PROGRAMS)) return;
             if($Value === 0) {
-                $this->SendRequest(self::UID_SETTING_POWERSTATE, self::VALUE_POWERSTATE_OFF);
+                $this->SendRequest(self::UID_STATUS_POWERSTATE, self::VALUE_POWERSTATE_OFF);
             } else {
                 $this->StartProgram($Value);
             }
         } else if($Ident === 'VentingLevel') {
             if($Value <= 0 || $Value >= 4) {
-                $this->SendRequest(self::UID_SETTING_POWERSTATE, self::VALUE_POWERSTATE_OFF);
+                $this->SendRequest(self::UID_STATUS_POWERSTATE, self::VALUE_POWERSTATE_OFF);
             } else {
                 $this->StartProgram(self::UID_PROGRAM_MANUAL, [
                     ["uid" => self::UID_OPTION_VENTINGLEVEL, "value" => $Value]
