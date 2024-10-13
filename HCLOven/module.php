@@ -1,10 +1,12 @@
 <?php
 
 require_once(__DIR__ . '/../libs/ModuleUtilities.php');
+require_once(__DIR__ . '/../libs/HCLUtilities.php');
 
 class HomeConnectLocalOven extends IPSModule
 {
     use ModuleUtilities;
+    use HCLUtilities;
 
     public function Create()
     {
@@ -17,10 +19,13 @@ class HomeConnectLocalOven extends IPSModule
         $this->RegisterPropertyString('Topic', 'homeconnect/oven');
 
         // variables
-        $this->RegisterVariableBoolean("Connected", "Connected");
-        $this->RegisterVariableString("State", "State");
-        $this->RegisterVariableFloat("CurrentCavityTemperature", "Temperature", "~Temperature");
+        $this->RegisterVariableBoolean("Connected", "Connected", "", 0);
+        $this->RegisterVariableBoolean("Power", "Power", "~Switch", 1);
+        $this->RegisterVariableString("State", "State", "", 2);
+        $this->RegisterVariableFloat("CurrentCavityTemperature", "Temperature", "~Temperature", 3);
 
+        $this->EnableAction("Power");
+    
         // buffers
         $this->MUSetBuffer('DaemonConnected', false);
         $this->MUSetBuffer('DeviceConnected', false);
@@ -70,7 +75,7 @@ class HomeConnectLocalOven extends IPSModule
                     // remap 'Standby' to Off
                     if($state === 'Standby') $state = 'Off';
                 } else {
-                    if($payload->OperationState !== 'Inactive') {
+                    if($payload->OperationState === 'Run') {
                         /*if($payload->AlarmClock) {
                             $state = $payload->AlarmClock . "|" . $payload->AlarmClockElapsed;
                         } else if(!$payload->PreheatFinished) {
@@ -78,12 +83,12 @@ class HomeConnectLocalOven extends IPSModule
                         } else
                         */
                     // @TODO: values are initially not present, check for their existence
-                        if($payload->RemainingProgramTime) {
-                            $state = 'Running (' . $payload->RemainingProgramTime . 's remaining)';
+                        if($payload->Duration) {
+                            $state = $this->FormatDuration($payload->RemainingProgramTime) . ' remaining';
                         } else if($payload->CurrentCavityTemperature < $payload->SetpointTemperature) {
                             $state = 'Preheating (' . floor($payload->CurrentCavityTemperature) . '/' . $payload->SetpointTemperature . ')';
                         } else if($payload->ElapsedProgramTime) {
-                            $state = 'Running (' . $payload->ElapsedProgramTime . 's elapsed)';
+                            $state = $this->FormatDuration($payload->ElapsedProgramTime) . ' elapsed';
                         } else {
                             $state = 'Running';
                         }
@@ -110,9 +115,8 @@ class HomeConnectLocalOven extends IPSModule
 
     public function RequestAction($Ident, $Value)
     {
-    }
-
-    public function SendRequest(string $Ident, string $Value)
-    {
+        if($Ident === 'Power') {
+            $this->SendRequest(539, $Value === false ? 3 : 2);
+        }
     }
 }

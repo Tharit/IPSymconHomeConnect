@@ -35,13 +35,15 @@ class HomeConnectLocalHood extends IPSModule
         ]);
 
         // variables
-        $this->RegisterVariableBoolean("Connected", "Connected");
-        $this->RegisterVariableBoolean("Power", "Power", "~Switch");
-        $this->RegisterVariableString("State", "State");
-        $this->RegisterVariableInteger("GreaseFilterSaturation", "Grease Filter Saturation", "~Intensity.100");
-        $this->RegisterVariableInteger("VentingLevel", "Venting Level", "HomeConnectLocalHood.VentingLevel");
-        $this->RegisterVariableInteger("Program", "Program", "HomeConnectLocalHood.Program");
-        $this->RegisterVariableBoolean("Lighting", "Light", "~Switch");
+        $this->RegisterVariableBoolean("Connected", "Connected", "", 0);
+        $this->RegisterVariableBoolean("Power", "Power", "~Switch", 1);
+        $this->RegisterVariableString("State", "State", "", 2);
+        $this->RegisterVariableInteger("Program", "Program", "HomeConnectLocalHood.Program", 3);
+        $this->RegisterVariableInteger("VentingLevel", "Venting Level", "HomeConnectLocalHood.VentingLevel", 4);
+        $this->RegisterVariableBoolean("Lighting", "Light", "~Switch", 5);
+        $this->RegisterVariableInteger("GreaseFilterSaturation", "Grease Filter Saturation", "~Intensity.100", 6);
+        $this->RegisterScript("ResetGreaseFilter", "Reset Grease Filter", "<?php\n HCL_ResetGreaseFilter(IPS_GetParent(\$_IPS['SELF']))", 7);
+
         $this->EnableAction("VentingLevel");
         $this->EnableAction("Program");
         $this->EnableAction("Lighting");
@@ -108,16 +110,16 @@ class HomeConnectLocalHood extends IPSModule
                     // remap 'Standby' to Off
                     if($state === 'Standby') $state = 'Off';
                 } else {
-                    if($payload->OperationState !== 'Inactive') {
+                    if($payload->OperationState === 'Run') {
                         $details = $program;
                         // manual mode
                         if($payload->ActiveProgram === 55307) {
                             $details = 'Level ' . $payload->VentingLevel;
                         // interval or fan run on
                         } else if($payload->ActiveProgram === 55306 || $payload->ActiveProgram === 55301) {
-                            $details .= ' - ' . $this->FormatDuration($payload->RemainingProgramTime) . ' remaining';
+                            $details .= ' (' . $this->FormatDuration($payload->RemainingProgramTime) . ' remaining)';
                         }
-                        $state = 'Running (' . $details . ')';
+                        $state = $details;
                     } else {
                         $state = $payload->OperationState;
                     }
@@ -154,5 +156,9 @@ class HomeConnectLocalHood extends IPSModule
                 $this->StartProgram(55307, [["uid" => 55308, "value" => $Value]]);
             }
         }
+    }
+
+    public function ResetGreaseFilter() {
+        $this->SendRequest(55304, true);
     }
 }
