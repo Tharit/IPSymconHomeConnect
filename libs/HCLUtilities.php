@@ -49,7 +49,7 @@ trait HCLUtilities {
         $Server['QualityOfService'] = 0;
         $Server['Retain'] = false;
         $Server['Topic'] = $this->ReadPropertyString('Topic') . '/update';
-        $Server['Payload'] = time();
+        $Server['Payload'] = json_encode(["time" => time()]);
         $ServerJSON = json_encode($Server, JSON_UNESCAPED_SLASHES);
         $resultServer = $this->SendDataToParent($ServerJSON);
     }
