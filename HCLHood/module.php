@@ -109,7 +109,7 @@ class HomeConnectLocalHood extends IPSModule
                         $details = $program;
                         // manual mode
                         if($payload->ActiveProgram === 55307) {
-                            $details .= ' - Level ' + $payload->VentingLevel;
+                            $details .= ' - Level ' . $payload->VentingLevel;
                         // interval or fan run on
                         } else if($payload->ActiveProgram === 55306 || $payload->ActiveProgram === 55301) {
                             $details .= ' - ' . $this->FormatDuration($payload->RemainingProgramTime) . ' remaining';
@@ -141,10 +141,8 @@ class HomeConnectLocalHood extends IPSModule
         } else if($Ident === 'VentingLevel') {
             if($Value <= 0 || $Value >= 4) {
                 $this->StartProgram(0);
-            } else if($this->GetValue("Program") !== 55307) {
-                $this->StartProgram(55307, [["uid" => 55308, "value" => $Value]]);
             } else {
-                $this->SendRequest(55308, max(0, min(3, $Value)));
+                $this->StartProgram(55307, [["uid" => 55308, "value" => $Value]]);
             }
         }
     }
