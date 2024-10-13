@@ -2,10 +2,10 @@
 
 trait HCLUtilities {
 
-    protected function HCLInit($dir) {
-        $this->MUSetBuffer('Device', file_get_contents($dir . '/device.json'));
+    protected function HCLInit() {
         $this->MUSetBuffer('DaemonConnected', false);
         $this->MUSetBuffer('DeviceConnected', false);
+        $this->MUSetBuffer('State', []);
     }
 
     protected function HCLUpdateConnected($topic, $payload) {
@@ -19,9 +19,14 @@ trait HCLUtilities {
         }
         $this->SetValue("Connected", $connected);
     }
-
+    
     protected function HCLUpdateState($payload) {
-
+        $state = $this->MUGetBuffer('State');
+        foreach($payload as $key => $value) {
+            $state[$key] = $value;
+        }
+        $this->MUSetBuffer('State', $state);
+        return $state;
     }
 
     protected function FormatDuration($duration) {

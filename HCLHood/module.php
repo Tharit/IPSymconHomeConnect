@@ -8,10 +8,46 @@ class HomeConnectLocalHood extends IPSModule
     use ModuleUtilities;
     use HCLUtilities;
 
+    protected static UID_STATUS_GREASEFILTERSATURATION = 4100;
+    protected static UID_SETTING_GREASEFILTERRESET = 55304;
+    protected static UID_OPTION_VENTINGLEVEL = 55308;
+    protected static UID_STATUS_POWERSTATE = 539;
+    protected static UID_ACTIVEPROGRAM = 256;
+    protected static UID_OPERATIONSTATE = 552;
+    protected static UID_REMAININGPROGRAMTIME = 544;
+    protected static VALUE_POWERSTATE_OFF = 1;
+    protected static VALUE_POWERSTATE_ON = 2;
+
+    protected static VALUE_OPERATIONSTATE_INACTIVE = 0;
+    protected static VALUE_OPERATIONSTATE_RUN = 3;
+
+    protected static UID_PROGRAM_NONE = 0;
+    protected static UID_PROGRAM_AUTO = 55296;
+    
+    protected static UID_PROGRAM_NONE = 0;
+    protected static UID_PROGRAM_AUTO = 55296;
+    protected static UID_PROGRAM_MANUAL = 55307;
+    protected static UID_PROGRAM_INTERVAL = 55306;
+    protected static UID_PROGRAM_DELAYEDSHUTOFF = 55301;
+
+    protected static UID_PROGRAMS = [
+        HomeConnectLocalHood::UID_PROGRAM_NONE,
+        HomeConnectLocalHood::UID_PROGRAM_AUTO,
+        HomeConnectLocalHood::UID_PROGRAM_MANUAL,
+        HomeConnectLocalHood::UID_PROGRAM_INTERVAL,
+        HomeConnectLocalHood::UID_PROGRAM_DELAYEDSHUTOFF
+    ];
+
+    protected static UID_SETTING_LIGHTING = 53253;
+
+    /**
+     * @TODO: define static variables for UIDs
+     */
+
     public function Create()
     {
         // buffers
-        $this->HCLInit(__DIR__);
+        $this->HCLInit(json_decode(file_get_contents(__DIR__ . '/device.json')));
 
         //Never delete this line!
         parent::Create();
@@ -22,18 +58,20 @@ class HomeConnectLocalHood extends IPSModule
 
         // profiles
         $this->RegisterProfileIntegerEx('HomeConnectLocalHood.Program', 'Program', '', '', [
-            [0, 'None',  '', -1],
-            [55296, 'Auto',  '', -1],
-            [55307, 'Manual',  '', -1],
-            [55306, 'Interval',  '', -1],
-            [55301, 'Delayed shut off',  '', -1]
+            [HomeConnectLocalHood::UID_PROGRAM_NONE, 'None',  '', -1],
+            [HomeConnectLocalHood::UID_PROGRAM_AUTO, 'Auto',  '', -1],
+            [HomeConnectLocalHood::UID_PROGRAM_MANUAL, 'Manual',  '', -1],
+            [HomeConnectLocalHood::UID_PROGRAM_INTERVAL, 'Interval',  '', -1],
+            [HomeConnectLocalHood::UID_PROGRAM_DELAYEDSHUTOFF, 'Delayed shut off',  '', -1]
         ]);
 
         $this->RegisterProfileIntegerEx('HomeConnectLocalHood.VentingLevel', 'Venting Level', '', '', [
             [0, 'Off',  '', -1],
             [1, '1',  '', -1],
             [2, '2',  '', -1],
-            [3, '3',  '', -1]
+            [3, '3',  '', -1],
+            [4, 'Boost',  '', -1],
+            [5, 'Super Boost',  '', -1]
         ]);
 
         // variables
@@ -81,73 +119,77 @@ class HomeConnectLocalHood extends IPSModule
 
             $state = $this->HCLUpdateState($payload);
             
-            /*
-            if(isset($payload->PowerState)) {
+            if(isset($state[HomeConnectLocalHood::UID_SETTING_POWERSTATE])) {
                 
                 $program = 'N/A';
-                if($payload->ActiveProgram === 55296) {
+                
+                $activeProgram = $state[HomeConnectLocalHood::UID_ACTIVEPROGRAM];
+                $powerState = $state[HomeConnectLocalHood::UID_SETTING_POWERSTATE];
+                $ventingLevel = $state[HomeConnectLocalHood::UID_OPTION_VENTINGLEVEL];
+
+                if($activeProgram === HomeConnectLocalHood::UID_PROGRAM_AUTO) {
                     $program = 'Auto';
-                } else if($payload->ActiveProgram === 55307) {
+                } else if($activeProgram === HomeConnectLocalHood::UID_PROGRAM_MANUAL) {
                     $program = 'Manual';
-                } else if($payload->ActiveProgram === 55306) {
+                } else if($activeProgram === HomeConnectLocalHood::UID_PROGRAM_INTERVAL) {
                     $program = 'Interval';
-                } else if($payload->ActiveProgram === 55301) {
+                } else if($activeProgram === HomeConnectLocalHood::UID_PROGRAM_DELAYEDSHUTOFF) {
                     $program = 'Delayed shut off';
                 }
-                $this->SetValue("GreaseFilterSaturation", $payload->GreaseFilterSaturation);
-                $this->SetValue("Program", $payload->ActiveProgram);
-                $this->SetValue("Lighting", $payload->Lighting);
-                $this->SetValue("VentingLevel", $payload->VentingLevel);
-                $this->SetValue("Power", $payload->PowerState === 'On' ? true : false);
+                $this->SetValue("GreaseFilterSaturation", $state[HomeConnectLocalHood::UID_STATUS_GREASEFILTERSATURATION]);
+                $this->SetValue("Program", $activeProgram);
+                $this->SetValue("Lighting", $state[HomeConnectLocalHood::UID_SETTING_LIGHTING]);
+                $this->SetValue("VentingLevel", $ventingLevel);
+                $this->SetValue("Power", $powerState === HomeConnectLocalHood::VALUE_POWERSTATE_ON ? true : false);
 
-                if($payload->PowerState !== 'On') {
-                    $state = $payload->PowerState;
-                    // remap 'Standby' to Off
-                    if($state === 'Standby') $state = 'Off';
+                if($powerState !== HomeConnectLocalHood::VALUE_POWERSTATE_ON) {
+                    $state = 'Off';
                 } else {
-                    if($payload->OperationState === 'Run') {
+                    $operationState = $state[HomeConnectLocalHood::UID_OPERATIONSTATE];
+                    if($operationState === HomeConnectLocalHood::VALUE_OPERATIONSTATE_RUN) {
                         $details = $program;
                         // manual mode
-                        if($payload->ActiveProgram === 55307) {
-                            $details = 'Level ' . $payload->VentingLevel;
+                        if($payload->ActiveProgram === HomeConnectLocalHood::UID_PROGRAM_MANUAL) {
+                            $details = 'Level ' . $ventingLevel;
                         // interval or fan run on
-                        } else if($payload->ActiveProgram === 55306 || $payload->ActiveProgram === 55301) {
-                            $details .= ' (' . $this->FormatDuration($payload->RemainingProgramTime) . ' remaining)';
+                        } else if($activeProgram === HomeConnectLocalHood::UID_PROGRAM_INTERVAL || $activeProgram === HomeConnectLocalHood::UID_PROGRAM_DELAYEDSHUTOFF) {
+                            $details .= ' (' . $this->FormatDuration($state[HomeConnectLocalHood::UID_REMAININGPROGRAMTIME]) . ' remaining)';
                         }
                         $state = $details;
                     } else {
-                        $state = $payload->OperationState;
+                        $state = 'Inactive';
                     }
                 }
                 $this->SetValue("State", $state);
             }
-            */
         }
     }
 
     public function RequestAction($Ident, $Value)
     {
         if($Ident === 'Power') {
-            $this->SendRequest(539, $Value === false ? 1 : 2);
+            $this->SendRequest(HomeConnectLocalHood::UID_SETTING_POWERSTATE, $Value === false ? HomeConnectLocalHood::VALUE_POWERSTATE_OFF : HomeConnectLocalHood::VALUE_POWERSTATE_ON);
         } else if($Ident === 'Lighting') {
-            $this->SendRequest(53253, $Value === true ? true : false);
+            $this->SendRequest(HomeConnectLocalHood::UID_SETTING_LIGHTING, $Value === true ? true : false);
         } else if($Ident === 'Program') {
-            if(!in_array($Value, [0, 55296, 55307, 55306, 55301])) return;
+            if(!in_array($Value, HomeConnectLocalHood::UID_PROGRAMS)) return;
             if($Value === 0) {
-                $this->SendRequest(539, 1);
+                $this->SendRequest(HomeConnectLocalHood::UID_SETTING_POWERSTATE, HomeConnectLocalHood::VALUE_POWERSTATE_OFF);
             } else {
                 $this->StartProgram($Value);
             }
         } else if($Ident === 'VentingLevel') {
             if($Value <= 0 || $Value >= 4) {
-                $this->SendRequest(539, 1);
+                $this->SendRequest(HomeConnectLocalHood::UID_SETTING_POWERSTATE, HomeConnectLocalHood::VALUE_POWERSTATE_OFF);
             } else {
-                $this->StartProgram(55307, [["uid" => 55308, "value" => $Value]]);
+                $this->StartProgram(HomeConnectLocalHood::UID_PROGRAM_MANUAL, [
+                    ["uid" => HomeConnectLocalHood::UID_OPTION_VENTINGLEVEL, "value" => $Value]
+                ]);
             }
         }
     }
 
     public function ResetGreaseFilter() {
-        $this->SendRequest(55304, true);
+        $this->SendRequest(HomeConnectLocalHood::UID_SETTING_GREASEFILTERRESET, true);
     }
 }
