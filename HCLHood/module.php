@@ -36,6 +36,7 @@ class HomeConnectLocalHood extends IPSModule
 
         // variables
         $this->RegisterVariableBoolean("Connected", "Connected");
+        $this->RegisterVariableBoolean("Power", "Power", "~Switch");
         $this->RegisterVariableString("State", "State");
         $this->RegisterVariableInteger("GreaseFilterSaturation", "Grease Filter Saturation", "~Intensity.100");
         $this->RegisterVariableInteger("VentingLevel", "Venting Level", "HomeConnectLocalHood.VentingLevel");
@@ -44,6 +45,7 @@ class HomeConnectLocalHood extends IPSModule
         $this->EnableAction("VentingLevel");
         $this->EnableAction("Program");
         $this->EnableAction("Lighting");
+        $this->EnableAction("Power");
 
         // buffers
         $this->MUSetBuffer('DaemonConnected', false);
@@ -99,6 +101,7 @@ class HomeConnectLocalHood extends IPSModule
                 $this->SetValue("Program", $payload->ActiveProgram);
                 $this->SetValue("Lighting", $payload->Lighting);
                 $this->SetValue("VentingLevel", $payload->VentingLevel);
+                $this->SetValue("Power", $payload->PowerState === 2 ? true : false)
 
                 if($payload->PowerState !== 'On') {
                     $state = $payload->PowerState;
@@ -109,7 +112,7 @@ class HomeConnectLocalHood extends IPSModule
                         $details = $program;
                         // manual mode
                         if($payload->ActiveProgram === 55307) {
-                            $details .= ' - Level ' . $payload->VentingLevel;
+                            $details = 'Level ' . $payload->VentingLevel;
                         // interval or fan run on
                         } else if($payload->ActiveProgram === 55306 || $payload->ActiveProgram === 55301) {
                             $details .= ' - ' . $this->FormatDuration($payload->RemainingProgramTime) . ' remaining';
@@ -133,14 +136,20 @@ class HomeConnectLocalHood extends IPSModule
 
     public function RequestAction($Ident, $Value)
     {
-        if($Ident === 'Lighting') {
+        if($Ident === 'Power') {
+            $this->SendRequest(539, $Value === false ? 1 : 2);
+        } else if($Ident === 'Lighting') {
             $this->SendRequest(53253, $Value === true ? true : false);
         } else if($Ident === 'Program') {
             if(!in_array($Value, [0, 55296, 55307, 55306, 55301])) return;
-            $this->StartProgram($Value);
+            if($Value === 0) {
+                $this->SendRequest(539, 1);
+            } else {
+                $this->StartProgram($Value);
+            }
         } else if($Ident === 'VentingLevel') {
             if($Value <= 0 || $Value >= 4) {
-                $this->StartProgram(0);
+                $this->SendRequest(539, 1);
             } else {
                 $this->StartProgram(55307, [["uid" => 55308, "value" => $Value]]);
             }
