@@ -133,12 +133,12 @@ class HomeConnectLocalHood extends IPSModule
 
     public function RequestAction($Ident, $Value)
     {
-        if($ident === 'Lighting') {
+        if($Ident === 'Lighting') {
             $this->SendRequest(53253, $Value === true ? true : false);
-        } else if($ident === 'Program') {
+        } else if($Ident === 'Program') {
             if(!in_array($Value, [0, 55296, 55307, 55306, 55301])) return;
             $this->StartProgram($Value);
-        } else if($ident === 'VentingLevel') {
+        } else if($Ident === 'VentingLevel') {
             if($Value <= 0 || $Value >= 4) {
                 $this->StartProgram(0);
             } else if($this->GetValue("Program") !== 55307) {
