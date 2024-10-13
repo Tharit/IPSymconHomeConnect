@@ -67,7 +67,7 @@ class HomeConnectLocalOven extends IPSModule
             if(isset($payload->PowerState)) {
 
                 $this->SetValue("CurrentCavityTemperature", $payload->CurrentCavityTemperature);
-                $this->SetValue("Power", $payload->PowerState === 2 ? true : false);
+                $this->SetValue("Power", $payload->PowerState === 'On' ? true : false);
 
                 if($payload->DoorState !== 'Closed') {
                     $state = 'Door open';
