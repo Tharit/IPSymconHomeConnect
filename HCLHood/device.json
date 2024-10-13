@@ -1,0 +1,618 @@
+{
+    "name": "hood",
+    "description": {
+        "type": "Hood",
+        "brand": "BOSCH",
+        "model": "DRC99PS20",
+        "version": "7",
+        "revision": "36"
+    },
+    "features": {
+        "3": {
+            "name": "BSH.Common.Setting.AllowBackendConnection",
+            "access": "readWrite",
+            "available": "true",
+            "refCID": "01",
+            "refDID": "00",
+            "discovery": {
+                "component_type": "binary_sensor",
+                "payload_values": {
+                    "payload_on": true,
+                    "payload_off": false
+                }
+            }
+        },
+        "5": {
+            "name": "BSH.Common.Status.BackendConnected",
+            "access": "read",
+            "available": "true",
+            "refCID": "01",
+            "refDID": "00",
+            "discovery": {
+                "component_type": "binary_sensor",
+                "payload_values": {
+                    "device_class": "connectivity",
+                    "payload_on": true,
+                    "payload_off": false
+                }
+            }
+        },
+        "6": {
+            "name": "BSH.Common.Command.AcknowledgeEvent",
+            "access": "writeOnly",
+            "available": "true",
+            "refCID": "15",
+            "refDID": "81"
+        },
+        "16": {
+            "name": "BSH.Common.Command.RejectEvent",
+            "access": "writeOnly",
+            "available": "true",
+            "refCID": "15",
+            "refDID": "81"
+        },
+        "21": {
+            "name": "BSH.Common.Event.SoftwareUpdateAvailable",
+            "handling": "acknowledge",
+            "level": "hint",
+            "refCID": "03",
+            "refDID": "80",
+            "values": {
+                "0": "Off",
+                "1": "Present",
+                "2": "Confirmed"
+            },
+            "discovery": {
+                "component_type": "binary_sensor",
+                "payload_values": {
+                    "device_class": "update",
+                    "payload_on": "Present"
+                }
+            }
+        },
+        "27": {
+            "name": "BSH.Common.Status.WiFiSignalStrength",
+            "access": "read",
+            "available": "true",
+            "notifyOnChange": "false",
+            "refCID": "12",
+            "refDID": "84"
+        },
+        "256": {
+            "name": "BSH.Common.Root.ActiveProgram"
+        },
+        "257": {
+            "name": "BSH.Common.Root.SelectedProgram"
+        },
+        "258": {
+            "name": "BSH.Common.Root.StatusList"
+        },
+        "259": {
+            "name": "BSH.Common.Root.SettingList"
+        },
+        "260": {
+            "name": "BSH.Common.Root.EventList"
+        },
+        "261": {
+            "name": "BSH.Common.Root.CommandList"
+        },
+        "262": {
+            "name": "BSH.Common.Root.OptionList"
+        },
+        "263": {
+            "name": "BSH.Common.Root.ProgramGroup"
+        },
+        "264": {
+            "name": "BSH.Common.Root.ProtectionPort"
+        },
+        "514": {
+            "name": "BSH.Common.Setting.AllowConsumerInsights",
+            "access": "readWrite",
+            "available": "true",
+            "refCID": "01",
+            "refDID": "00"
+        },
+        "517": {
+            "name": "BSH.Common.Status.RemoteControlStartAllowed",
+            "access": "read",
+            "available": "true",
+            "refCID": "01",
+            "refDID": "00",
+            "discovery": {
+                "component_type": "binary_sensor",
+                "payload_values": {
+                    "payload_on": true,
+                    "payload_off": false
+                }
+            }
+        },
+        "523": {
+            "name": "BSH.Common.Status.RemoteControlActive",
+            "access": "read",
+            "available": "true",
+            "refCID": "01",
+            "refDID": "00",
+            "discovery": {
+                "component_type": "binary_sensor",
+                "payload_values": {
+                    "payload_on": true,
+                    "payload_off": false
+                }
+            }
+        },
+        "528": {
+            "name": "BSH.Common.Option.ElapsedProgramTime"
+        },
+        "535": {
+            "name": "BSH.Common.Status.LocalControlActive",
+            "access": "read",
+            "available": "true",
+            "refCID": "01",
+            "refDID": "00"
+        },
+        "539": {
+            "name": "BSH.Common.Setting.PowerState",
+            "access": "readWrite",
+            "available": "true",
+            "refCID": "03",
+            "refDID": "80",
+            "values": {
+                "1": "Off",
+                "2": "On"
+            },
+            "discovery": {
+                "component_type": "binary_sensor",
+                "payload_values": {
+                    "device_class": "power"
+                }
+            }
+        },
+        "540": {
+            "name": "BSH.Common.Event.ProgramFinished",
+            "handling": "acknowledge",
+            "level": "hint",
+            "refCID": "03",
+            "refDID": "80",
+            "values": {
+                "0": "Off",
+                "1": "Present",
+                "2": "Confirmed"
+            }
+        },
+        "541": {
+            "name": "BSH.Common.Command.DeactivateRemoteControl",
+            "access": "writeOnly",
+            "available": "true",
+            "refCID": "01",
+            "refDID": "00"
+        },
+        "542": {
+            "name": "BSH.Common.Option.ProgramProgress",
+            "discovery": {
+                "payload_values": {
+                    "unit_of_measurement": "%"
+                }
+            }
+        },
+        "544": {
+            "name": "BSH.Common.Option.RemainingProgramTime",
+            "discovery": {
+                "payload_values": {
+                    "unit_of_measurement": "s",
+                    "device_class": "duration"
+                }
+            }
+        },
+        "548": {
+            "name": "BSH.Common.Option.Duration"
+        },
+        "552": {
+            "name": "BSH.Common.Status.OperationState",
+            "access": "read",
+            "available": "true",
+            "refCID": "03",
+            "refDID": "80",
+            "values": {
+                "0": "Inactive",
+                "3": "Run"
+            }
+        },
+        "553": {
+            "name": "BSH.Common.Command.ApplyFactoryReset",
+            "access": "writeOnly",
+            "available": "true",
+            "refCID": "01",
+            "refDID": "00"
+        },
+        "554": {
+            "name": "BSH.Common.Command.ApplyNetworkReset",
+            "access": "writeOnly",
+            "available": "true",
+            "refCID": "01",
+            "refDID": "00"
+        },
+        "557": {
+            "name": "BSH.Common.Status.CustomerServiceConnectionAllowed",
+            "access": "read",
+            "available": "true",
+            "refCID": "01",
+            "refDID": "00"
+        },
+        "559": {
+            "name": "BSH.Common.Event.CustomerServiceRequest",
+            "handling": "none",
+            "level": "hint",
+            "refCID": "03",
+            "refDID": "80",
+            "values": {
+                "0": "Off",
+                "1": "Present",
+                "2": "Confirmed"
+            }
+        },
+        "560": {
+            "name": "BSH.Common.Command.DisallowCustomerServiceConnection",
+            "access": "writeOnly",
+            "available": "true",
+            "refCID": "01",
+            "refDID": "00"
+        },
+        "575": {
+            "name": "BSH.Common.Command.AllowSoftwareUpdateLocalWiFi",
+            "access": "writeOnly",
+            "available": "false",
+            "refCID": "01",
+            "refDID": "00"
+        },
+        "576": {
+            "name": "BSH.Common.Command.AllowCustomerServiceConnectionLocalWiFi",
+            "access": "writeOnly",
+            "available": "true",
+            "refCID": "01",
+            "refDID": "00"
+        },
+        "577": {
+            "name": "BSH.Common.Event.ConnectLocalWiFi",
+            "handling": "none",
+            "level": "warning",
+            "refCID": "03",
+            "refDID": "80",
+            "values": {
+                "0": "Off",
+                "1": "Present",
+                "2": "Confirmed"
+            }
+        },
+        "592": {
+            "name": "BSH.Common.Status.SoftwareUpdateTransactionID",
+            "access": "read",
+            "available": "false",
+            "refCID": "26",
+            "refDID": "83"
+        },
+        "593": {
+            "name": "BSH.Common.Event.SoftwareDownloadAvailable",
+            "handling": "acknowledge",
+            "level": "hint",
+            "refCID": "03",
+            "refDID": "80",
+            "values": {
+                "0": "Off",
+                "1": "Present",
+                "2": "Confirmed"
+            }
+        },
+        "594": {
+            "name": "BSH.Common.Command.AllowSoftwareDownload",
+            "access": "writeOnly",
+            "available": "false",
+            "refCID": "01",
+            "refDID": "00"
+        },
+        "595": {
+            "name": "BSH.Common.Event.SoftwareUpdateSuccessful",
+            "handling": "acknowledge",
+            "level": "hint",
+            "refCID": "03",
+            "refDID": "80",
+            "values": {
+                "0": "Off",
+                "1": "Present",
+                "2": "Confirmed"
+            }
+        },
+        "596": {
+            "name": "BSH.Common.Setting.NetworkInterface",
+            "access": "readWrite",
+            "available": "true",
+            "refCID": "03",
+            "refDID": "80",
+            "values": {
+                "0": "Off",
+                "1": "WiFi"
+            }
+        },
+        "597": {
+            "name": "BSH.Common.Command.ConnectLocalCustomerService",
+            "access": "writeOnly",
+            "available": "false",
+            "refCID": "01",
+            "refDID": "00"
+        },
+        "4100": {
+            "name": "Cooking.Hood.Status.GreaseFilterSaturation",
+            "access": "read",
+            "available": "true",
+            "refCID": "11",
+            "refDID": "A0"
+        },
+        "4101": {
+            "name": "Cooking.Hood.Status.CarbonFilterSaturation",
+            "access": "read",
+            "available": "true",
+            "refCID": "11",
+            "refDID": "A0",
+            "discovery": {
+                "payload_values": {
+                    "unit_of_measurement": "s",
+                    "device_class": "duration"
+                }
+            }
+        },
+        "4104": {
+            "name": "Cooking.Hood.Status.RegenerativeCarbonFilterLifeCycle",
+            "access": "read",
+            "available": "true",
+            "refCID": "11",
+            "refDID": "A0"
+        },
+        "4105": {
+            "name": "Cooking.Hood.Status.RegenerativeCarbonFilterSaturation",
+            "access": "read",
+            "available": "true",
+            "refCID": "11",
+            "refDID": "A0"
+        },
+        "4352": {
+            "name": "Cooking.Hood.Setting.CarbonFilterType",
+            "access": "readWrite",
+            "available": "true",
+            "refCID": "03",
+            "refDID": "80",
+            "values": {
+                "0": "None",
+                "1": "BasicCarbonFilter",
+                "2": "RegenerativeCarbonFilter"
+            }
+        },
+        "4353": {
+            "name": "Cooking.Hood.Setting.SensorSensitivity",
+            "access": "readWrite",
+            "available": "true",
+            "max": "9",
+            "min": "0",
+            "refCID": "02",
+            "refDID": "80"
+        },
+        "4354": {
+            "name": "Cooking.Hood.Setting.NoiseReduction",
+            "access": "readWrite",
+            "available": "true",
+            "refCID": "01",
+            "refDID": "00"
+        },
+        "4356": {
+            "name": "Cooking.Hood.Setting.IntervalStage",
+            "access": "readWrite",
+            "available": "true",
+            "max": "3",
+            "min": "1",
+            "refCID": "03",
+            "refDID": "80",
+            "values": {
+                "0": "FanOff",
+                "1": "FanStage01",
+                "2": "FanStage02",
+                "3": "FanStage03"
+            }
+        },
+        "4358": {
+            "name": "Cooking.Hood.Setting.IntervalTimeOn",
+            "access": "readWrite",
+            "available": "true",
+            "max": "5940",
+            "min": "60",
+            "refCID": "10",
+            "refDID": "81",
+            "stepSize": "60"
+        },
+        "4359": {
+            "name": "Cooking.Hood.Setting.IntervalTimeOff",
+            "access": "readWrite",
+            "available": "true",
+            "max": "5940",
+            "min": "60",
+            "refCID": "10",
+            "refDID": "81",
+            "stepSize": "60"
+        },
+        "4361": {
+            "name": "Cooking.Hood.Setting.DelayedShutOffStage",
+            "access": "readWrite",
+            "available": "true",
+            "max": "3",
+            "min": "1",
+            "refCID": "03",
+            "refDID": "80",
+            "values": {
+                "0": "FanOff",
+                "1": "FanStage01",
+                "2": "FanStage02",
+                "3": "FanStage03"
+            }
+        },
+        "4363": {
+            "name": "Cooking.Hood.Setting.DelayedShutOffTime",
+            "access": "readWrite",
+            "available": "true",
+            "max": "5940",
+            "min": "60",
+            "refCID": "10",
+            "refDID": "81",
+            "stepSize": "60"
+        },
+        "53251": {
+            "name": "Cooking.Common.Setting.ButtonTones",
+            "access": "readWrite",
+            "available": "true",
+            "refCID": "01",
+            "refDID": "00"
+        },
+        "53253": {
+            "name": "Cooking.Common.Setting.Lighting",
+            "access": "readWrite",
+            "available": "true",
+            "refCID": "01",
+            "refDID": "00"
+        },
+        "53254": {
+            "name": "Cooking.Common.Setting.LightingBrightness",
+            "access": "readWrite",
+            "available": "true",
+            "max": "100",
+            "min": "10",
+            "refCID": "11",
+            "refDID": "A0"
+        },
+        "55296": {
+            "name": "Cooking.Common.Program.Hood.Automatic"
+        },
+        "55298": {
+            "name": "Cooking.Common.Event.Hood.CarbonFilterMaxSaturationNearlyReached",
+            "handling": "acknowledge",
+            "level": "hint",
+            "refCID": "03",
+            "refDID": "80",
+            "values": {
+                "0": "Off",
+                "1": "Present",
+                "2": "Confirmed"
+            }
+        },
+        "55299": {
+            "name": "Cooking.Common.Event.Hood.CarbonFilterMaxSaturationReached",
+            "handling": "acknowledge",
+            "level": "warning",
+            "refCID": "03",
+            "refDID": "80",
+            "values": {
+                "0": "Off",
+                "1": "Present",
+                "2": "Confirmed"
+            }
+        },
+        "55300": {
+            "name": "Cooking.Common.Command.Hood.CarbonFilterReset",
+            "access": "writeOnly",
+            "available": "true",
+            "refCID": "01",
+            "refDID": "00"
+        },
+        "55301": {
+            "name": "Cooking.Common.Program.Hood.DelayedShutOff"
+        },
+        "55302": {
+            "name": "Cooking.Common.Event.Hood.GreaseFilterMaxSaturationNearlyReached",
+            "handling": "acknowledge",
+            "level": "hint",
+            "refCID": "03",
+            "refDID": "80",
+            "values": {
+                "0": "Off",
+                "1": "Present",
+                "2": "Confirmed"
+            }
+        },
+        "55303": {
+            "name": "Cooking.Common.Event.Hood.GreaseFilterMaxSaturationReached",
+            "handling": "acknowledge",
+            "level": "warning",
+            "refCID": "03",
+            "refDID": "80",
+            "values": {
+                "0": "Off",
+                "1": "Present",
+                "2": "Confirmed"
+            }
+        },
+        "55304": {
+            "name": "Cooking.Common.Command.Hood.GreaseFilterReset",
+            "access": "writeOnly",
+            "available": "true",
+            "refCID": "01",
+            "refDID": "00"
+        },
+        "55305": {
+            "name": "Cooking.Common.Option.Hood.IntensiveLevel"
+        },
+        "55306": {
+            "name": "Cooking.Common.Program.Hood.Interval"
+        },
+        "55307": {
+            "name": "Cooking.Common.Program.Hood.Venting"
+        },
+        "55308": {
+            "name": "Cooking.Common.Option.Hood.VentingLevel"
+        },
+        "55310": {
+            "name": "Cooking.Common.Event.Hood.RegenerativeCarbonFilterLifeTimeExceeded",
+            "handling": "acknowledge",
+            "level": "warning",
+            "refCID": "03",
+            "refDID": "80",
+            "values": {
+                "0": "Off",
+                "1": "Present",
+                "2": "Confirmed"
+            }
+        },
+        "55312": {
+            "name": "Cooking.Common.Event.Hood.RegenerativeCarbonFilterMaxSaturationReached",
+            "handling": "acknowledge",
+            "level": "warning",
+            "refCID": "03",
+            "refDID": "80",
+            "values": {
+                "0": "Off",
+                "1": "Present",
+                "2": "Confirmed"
+            }
+        },
+        "55313": {
+            "name": "Cooking.Common.Command.Hood.RegenerativeCarbonFilterReset",
+            "access": "writeOnly",
+            "available": "true",
+            "refCID": "01",
+            "refDID": "00"
+        },
+        "55314": {
+            "name": "Cooking.Common.Event.Hood.RegenerativeCarbonFilterLifeTimeNearlyExceeded",
+            "handling": "acknowledge",
+            "level": "hint",
+            "refCID": "03",
+            "refDID": "80",
+            "values": {
+                "0": "Off",
+                "1": "Present",
+                "2": "Confirmed"
+            }
+        },
+        "55315": {
+            "name": "Cooking.Common.Command.Hood.RegenerativeCarbonFilterLifeTimeReset",
+            "access": "writeOnly",
+            "available": "true",
+            "refCID": "01",
+            "refDID": "00"
+        }
+    }
+}
