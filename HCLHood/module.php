@@ -63,6 +63,8 @@ class HomeConnectLocalHood extends IPSModule
         $filter = implode('/', array_slice(explode('/', $topic), 0, -1)) . '/LWT|' . $topic . '/.*';
         $this->SendDebug('Filter', $filter, 0);
         $this->SetReceiveDataFilter('.*(' . $filter . ').*');
+
+        $this->RequestUpdate();
     }
 
     public function ReceiveData($JSONString)
@@ -87,6 +89,7 @@ class HomeConnectLocalHood extends IPSModule
         } else {
             $payload = json_decode($Buffer->Payload);
 
+            /*
             if(isset($payload->PowerState)) {
                 
                 $program = 'N/A';
@@ -133,6 +136,7 @@ class HomeConnectLocalHood extends IPSModule
                 // GreaseFilterMaxSaturationReached
                 // VentingLevel (0, 1, 2, ...)
             }
+            */
         }
     }
 

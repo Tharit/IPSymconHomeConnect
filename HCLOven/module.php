@@ -40,6 +40,8 @@ class HomeConnectLocalOven extends IPSModule
         $filter = implode('/', array_slice(explode('/', $topic), 0, -1)) . '/LWT|' . $topic . '/.*';
         $this->SendDebug('Filter', $filter, 0);
         $this->SetReceiveDataFilter('.*(' . $filter . ').*');
+
+        $this->RequestUpdate();
     }
 
     public function ReceiveData($JSONString)
@@ -64,6 +66,7 @@ class HomeConnectLocalOven extends IPSModule
         } else {
             $payload = json_decode($Buffer->Payload);
 
+            /*
             if(isset($payload->PowerState)) {
 
                 $this->SetValue("CurrentCavityTemperature", $payload->CurrentCavityTemperature);
@@ -95,6 +98,7 @@ class HomeConnectLocalOven extends IPSModule
                 }
                 $this->SetValue("State", $state);
             }
+            */
         }
     }
 

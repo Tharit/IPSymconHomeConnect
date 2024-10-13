@@ -40,4 +40,17 @@ trait HCLUtilities {
         $ServerJSON = json_encode($Server, JSON_UNESCAPED_SLASHES);
         $resultServer = $this->SendDataToParent($ServerJSON);
     }
+
+    protected function RequestUpdate()
+    {
+        //MQTT Server
+        $Server['DataID'] = '{043EA491-0325-4ADD-8FC2-A30C8EEB4D3F}';
+        $Server['PacketType'] = 3;
+        $Server['QualityOfService'] = 0;
+        $Server['Retain'] = false;
+        $Server['Topic'] = $this->ReadPropertyString('Topic') . '/update';
+        $Server['Payload'] = time();
+        $ServerJSON = json_encode($Server, JSON_UNESCAPED_SLASHES);
+        $resultServer = $this->SendDataToParent($ServerJSON);
+    }
 }
