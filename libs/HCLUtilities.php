@@ -2,6 +2,28 @@
 
 trait HCLUtilities {
 
+    protected function HCLInit($dir) {
+        $this->MUSetBuffer('Device', file_get_contents($dir . '/device.json'));
+        $this->MUSetBuffer('DaemonConnected', false);
+        $this->MUSetBuffer('DeviceConnected', false);
+    }
+
+    protected function HCLUpdateConnected($topic, $payload) {
+        $connected = $payload === 'online' ? true : false;
+        if($topic === $this->ReadPropertyString('Topic') . '/LWT') {
+            $this->MUSetBuffer('DeviceConnected', $connected);
+            $connected = $connected && $this->MUGetBuffer('DaemonConnected');
+        } else {
+            $this->MUSetBuffer('DaemonConnected', $connected);
+            $connected = $connected && $this->MUGetBuffer('DeviceConnected');
+        }
+        $this->SetValue("Connected", $connected);
+    }
+
+    protected function HCLUpdateState($payload) {
+
+    }
+
     protected function FormatDuration($duration) {
         $minutes = floor(($duration % 3600) / 60);
         $hours = floor($duration / 3600);

@@ -10,9 +10,11 @@ class HomeConnectLocalHood extends IPSModule
 
     public function Create()
     {
+        // buffers
+        $this->HCLInit(__DIR__);
+
         //Never delete this line!
         parent::Create();
-
         $this->ConnectParent('{C6D2AEB3-6E1F-4B2E-8E69-3A1A00246850}');
 
         // properties
@@ -48,10 +50,6 @@ class HomeConnectLocalHood extends IPSModule
         $this->EnableAction("Program");
         $this->EnableAction("Lighting");
         $this->EnableAction("Power");
-
-        // buffers
-        $this->MUSetBuffer('DaemonConnected', false);
-        $this->MUSetBuffer('DeviceConnected', false);
     }
 
     public function ApplyChanges()
@@ -77,18 +75,12 @@ class HomeConnectLocalHood extends IPSModule
         $Buffer = $data;
 
         if (fnmatch('*/LWT', $Buffer->Topic)) {
-            $connected = $Buffer->Payload === 'online' ? true : false;
-            if($Buffer->Topic === $this->ReadPropertyString('Topic') . '/LWT') {
-                $this->MUSetBuffer('DeviceConnected', $connected);
-                $connected = $connected && $this->MUGetBuffer('DaemonConnected');
-            } else {
-                $this->MUSetBuffer('DaemonConnected', $connected);
-                $connected = $connected && $this->MUGetBuffer('DeviceConnected');
-            }
-            $this->SetValue("Connected", $connected);
+            $this->HCLUpdateConnected($Buffer->Topic, $Buffer->Payload);
         } else {
             $payload = json_decode($Buffer->Payload);
 
+            $state = $this->HCLUpdateState($payload);
+            
             /*
             if(isset($payload->PowerState)) {
                 
@@ -128,13 +120,6 @@ class HomeConnectLocalHood extends IPSModule
                     }
                 }
                 $this->SetValue("State", $state);
-                // PowerState
-                // OperationState
-                // ActiveProgram (auto = 55296, manual = 55307, interval ventilation = 55306, fan run on = 55301)
-                // Lighting
-                // GreaseFilterMaxSaturationNearlyReached
-                // GreaseFilterMaxSaturationReached
-                // VentingLevel (0, 1, 2, ...)
             }
             */
         }
