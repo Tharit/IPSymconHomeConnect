@@ -28,7 +28,7 @@ trait HCLUtilities {
         $resultServer = $this->SendDataToParent($ServerJSON);
     }
     
-    protected function SendRequest(number $uid, string $Value)
+    protected function SendRequest(int $uid, string $Value)
     {
         //MQTT Server
         $Server['DataID'] = '{043EA491-0325-4ADD-8FC2-A30C8EEB4D3F}';
