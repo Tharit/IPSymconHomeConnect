@@ -116,49 +116,49 @@ class HomeConnectLocalHood extends IPSModule
 
             $state = $this->HCLUpdateState($payload);
             
-            if(isset($state[self::UID_STATUS_POWERSTATE])) {
-                
-                $program = 'N/A';
-                
-                $activeProgram = $state[self::UID_ACTIVEPROGRAM];
-                $powerState = $state[self::UID_STATUS_POWERSTATE];
-                $ventingLevel = $state[self::UID_OPTION_VENTINGLEVEL];
+            $program = 'N/A';
+            
+            $activeProgram = $this->HCLGet($state, self::UID_ACTIVEPROGRAM, 0);
+            $powerState = $this->HCLGet($state, self::UID_STATUS_POWERSTATE, self::VALUE_POWERSTATE_OFF);
+            $ventingLevel = $this->HCLGet($state, self::UID_OPTION_VENTINGLEVEL, 0);
+            $saturation = $this->HCLGet($state, self::UID_STATUS_GREASEFILTERSATURATION, 0);
+            $lighting = $this->HCLGet($state, self::UID_SETTING_LIGHTING, false);
+            $remainingProgramTime = $this->HCLGet($state, self::UID_REMAININGPROGRAMTIME, 0);
 
-                if($activeProgram === self::UID_PROGRAM_AUTO) {
-                    $program = 'Auto';
-                } else if($activeProgram === self::UID_PROGRAM_MANUAL) {
-                    $program = 'Manual';
-                } else if($activeProgram === self::UID_PROGRAM_INTERVAL) {
-                    $program = 'Interval';
-                } else if($activeProgram === self::UID_PROGRAM_DELAYEDSHUTOFF) {
-                    $program = 'Delayed shut off';
-                }
-                $this->SetValue("GreaseFilterSaturation", $state[self::UID_STATUS_GREASEFILTERSATURATION]);
-                $this->SetValue("Program", $activeProgram);
-                $this->SetValue("Lighting", $state[self::UID_SETTING_LIGHTING]);
-                $this->SetValue("VentingLevel", $ventingLevel);
-                $this->SetValue("Power", $powerState === self::VALUE_POWERSTATE_ON ? true : false);
-
-                if($powerState !== self::VALUE_POWERSTATE_ON) {
-                    $state = 'Off';
-                } else {
-                    $operationState = $state[self::UID_OPERATIONSTATE];
-                    if($operationState === self::VALUE_OPERATIONSTATE_RUN) {
-                        $details = $program;
-                        // manual mode
-                        if($payload->ActiveProgram === self::UID_PROGRAM_MANUAL) {
-                            $details = 'Level ' . $ventingLevel;
-                        // interval or fan run on
-                        } else if($activeProgram === self::UID_PROGRAM_INTERVAL || $activeProgram === self::UID_PROGRAM_DELAYEDSHUTOFF) {
-                            $details .= ' (' . $this->FormatDuration($state[self::UID_REMAININGPROGRAMTIME]) . ' remaining)';
-                        }
-                        $state = $details;
-                    } else {
-                        $state = 'Inactive';
-                    }
-                }
-                $this->SetValue("State", $state);
+            if($activeProgram === self::UID_PROGRAM_AUTO) {
+                $program = 'Auto';
+            } else if($activeProgram === self::UID_PROGRAM_MANUAL) {
+                $program = 'Manual';
+            } else if($activeProgram === self::UID_PROGRAM_INTERVAL) {
+                $program = 'Interval';
+            } else if($activeProgram === self::UID_PROGRAM_DELAYEDSHUTOFF) {
+                $program = 'Delayed shut off';
             }
+            $this->SetValue("GreaseFilterSaturation", $saturation);
+            $this->SetValue("Program", $activeProgram);
+            $this->SetValue("Lighting", $lighting);
+            $this->SetValue("VentingLevel", $ventingLevel);
+            $this->SetValue("Power", $powerState === self::VALUE_POWERSTATE_ON ? true : false);
+
+            if($powerState !== self::VALUE_POWERSTATE_ON) {
+                $state = 'Off';
+            } else {
+                $operationState = $this->HCLGet($state, self::UID_OPERATIONSTATE, self::VALUE_OPERATIONSTATE_INACTIVE);
+                if($operationState === self::VALUE_OPERATIONSTATE_RUN) {
+                    $details = $program;
+                    // manual mode
+                    if($payload->ActiveProgram === self::UID_PROGRAM_MANUAL) {
+                        $details = 'Level ' . $ventingLevel;
+                    // interval or fan run on
+                    } else if($activeProgram === self::UID_PROGRAM_INTERVAL || $activeProgram === self::UID_PROGRAM_DELAYEDSHUTOFF) {
+                        $details .= ' (' . $this->FormatDuration($remainingProgramTime) . ' remaining)';
+                    }
+                    $state = $details;
+                } else {
+                    $state = 'Inactive';
+                }
+            }
+            $this->SetValue("State", $state);
         }
     }
 

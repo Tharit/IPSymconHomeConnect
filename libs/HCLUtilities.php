@@ -20,6 +20,11 @@ trait HCLUtilities {
         $this->SetValue("Connected", $connected);
     }
     
+    protected function HCLGet($state, $uid, $default) {
+        if(isset($state[$uid])) return $state[$uid];
+        return $default;
+    }
+    
     protected function HCLUpdateState($payload) {
         $state = $this->MUGetBuffer('State');
         foreach($payload as $key => $value) {
