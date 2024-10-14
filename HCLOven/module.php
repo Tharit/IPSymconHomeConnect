@@ -84,6 +84,7 @@ class HomeConnectLocalOven extends HCLDevice
             $remainingProgramTime = $this->HCLGet($state, self::UID_OPTION_REMAININGPROGRAMTIME, 0);
             $elapsedProgramTime = $this->HCLGet($state, self::UID_OPTION_ELAPSEDPROGRAMTIME, 0);
             $duration = $this->HCLGet($state, self::UID_OPTION_DURATION, 0);
+            $startInRelative = $this->HCLGet($state, self::UID_OPTION_STARTINRELATIVE, 0);
 
             $currentCavityTemperature = $this->HCLGet($state, self::UID_STATUS_CURRENTCAVITYTEMPERATURE, 0);
 
@@ -96,7 +97,7 @@ class HomeConnectLocalOven extends HCLDevice
                 $state = 'Off';
             } else {
                 if($operationState === self::VALUE_OPERATIONSTATE_DELAYEDSTART) {
-                    $state = 'Start in ' . $this->HCLFormatDuration($remainingProgramTime);
+                    $state = 'Start in ' . $this->HCLFormatDuration($startInRelative);
                 } else if($operationState === self::VALUE_OPERATIONSTATE_RUN) {
                     if($duration) {
                         $state = $this->HCLFormatDuration($remainingProgramTime) . ' remaining';

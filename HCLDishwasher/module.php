@@ -63,7 +63,7 @@ class HomeConnectLocalDishwasher extends HCLDevice
             
             $remainingProgramTime = $this->HCLGet($state, self::UID_OPTION_REMAININGPROGRAMTIME, 0);
             $elapsedProgramTime = $this->HCLGet($state, self::UID_OPTION_ELAPSEDPROGRAMTIME, 0);
-            $duration = $this->HCLGet($state, self::UID_OPTION_DURATION, 0);
+            $startInRelative = $this->HCLGet($state, self::UID_OPTION_STARTINRELATIVE, 0);
 
             $this->SetValue("Power", $powerState === self::VALUE_POWERSTATE_ON ? true : false);
 
@@ -73,9 +73,9 @@ class HomeConnectLocalDishwasher extends HCLDevice
                 $state = 'Off';
             } else {
                 if($operationState === self::VALUE_OPERATIONSTATE_DELAYEDSTART) {
-                    $state = 'Start in ' . $this->HCLFormatDuration($remainingProgramTime);
+                    $state = 'Start in ' . $this->HCLFormatDuration($startInRelative);
                 } else if($operationState === self::VALUE_OPERATIONSTATE_RUN) {
-                    if($duration) {
+                    if($remainingProgramTime) {
                         $state = $this->HCLFormatDuration($remainingProgramTime) . ' remaining';
                     } else {
                         $state = 'Running';
