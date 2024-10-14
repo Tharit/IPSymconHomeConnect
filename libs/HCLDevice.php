@@ -24,6 +24,8 @@ class HCLDevice extends IPSModule {
     const VALUE_POWERSTATE_OFF = 1;
     const VALUE_POWERSTATE_ON = 2;
     const VALUE_POWERSTATE_STANDBY = 3;
+
+    const COMMAND_MAINSPOWEROFF = 536;
     
     const VALUE_OPERATIONSTATE_INACTIVE         = 0;
     const VALUE_OPERATIONSTATE_READY            = 1;

@@ -62,7 +62,6 @@ class HomeConnectLocalDishwasher extends HCLDevice
             $doorState = $this->HCLGet($state, self::UID_STATUS_DOORSTATE, self::VALUE_DOORSTATE_CLOSED);
             
             $remainingProgramTime = $this->HCLGet($state, self::UID_OPTION_REMAININGPROGRAMTIME, 0);
-            $elapsedProgramTime = $this->HCLGet($state, self::UID_OPTION_ELAPSEDPROGRAMTIME, 0);
             $startInRelative = $this->HCLGet($state, self::UID_OPTION_STARTINRELATIVE, 0);
 
             $this->SetValue("Power", $powerState === self::VALUE_POWERSTATE_ON ? true : false);
@@ -91,7 +90,7 @@ class HomeConnectLocalDishwasher extends HCLDevice
     public function RequestAction($Ident, $Value)
     {
         if($Ident === 'Power') {
-            $this->HCLSendRequest(self::UID_SETTING_POWERSTATE, $Value === false ? self::VALUE_POWERSTATE_OFF : self::VALUE_POWERSTATE_ON);
+            $this->HCLSendRequest(self::UID_SETTING_POWERSTATE, $Value === false ? self::VALUE_POWERSTATE_MAINSOFF : self::VALUE_POWERSTATE_ON);
         }
     }
 }
