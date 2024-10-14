@@ -52,8 +52,6 @@ class HomeConnectLocalOven extends HCLDevice
         //Never delete this line!
         parent::ApplyChanges();
 
-        $this->ConnectParent('{C6D2AEB3-6E1F-4B2E-8E69-3A1A00246850}');
-
         $topic = $this->ReadPropertyString('Topic');
         $filter = implode('/', array_slice(explode('/', $topic), 0, -1)) . '/LWT|' . $topic . '/.*';
         $this->SendDebug('Filter', $filter, 0);
