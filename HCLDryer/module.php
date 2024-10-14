@@ -18,7 +18,7 @@ class HomeConnectLocalDryer extends HCLDevice
         $this->RegisterPropertyString('Topic', 'homeconnect/dryer');
 
         // profiles
-        $this->RegisterProfileIntegerEx('HomeConnectLocalDryer.Power', 'Power', '', '', [
+        $this->RegisterProfileBooleanEx('HomeConnectLocalDryer.Power', 'Power', '', '', [
             [false, 'Off',  '', -1],
             [true, 'On',  '', -1]
         ]);
