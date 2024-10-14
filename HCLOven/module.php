@@ -87,6 +87,7 @@ class HomeConnectLocalOven extends HCLDevice
             $startInRelative = $this->HCLGet($state, self::UID_OPTION_STARTINRELATIVE, 0);
 
             $currentCavityTemperature = $this->HCLGet($state, self::UID_STATUS_CURRENTCAVITYTEMPERATURE, 0);
+            $setpointTemperature = $this->HCLGet($state, self::UID_STATUS_SETPOINTTEMPERATURE, 0);
 
             $this->SetValue("CurrentCavityTemperature", $currentCavityTemperature);
             $this->SetValue("Power", $powerState === self::VALUE_POWERSTATE_ON ? true : false);

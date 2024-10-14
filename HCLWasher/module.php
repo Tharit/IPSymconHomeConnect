@@ -63,7 +63,7 @@ class HomeConnectLocalWasher extends HCLDevice
             
             $powerStateBool = $powerState === self::VALUE_POWERSTATE_ON ? true : false;
             $this->SetValue("Power", $powerStateBool);
-            if(powerStateBool) {
+            if($powerStateBool) {
                 $this->EnableAction("Power");
             } else {
                 $this->DisableAction("Power");
