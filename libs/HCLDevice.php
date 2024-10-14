@@ -1,6 +1,6 @@
 <?php
 
-class HCLDevice implements IPSModule {
+class HCLDevice extends IPSModule {
 
     // generic
     const UID_ACTIVEPROGRAM = 256;
