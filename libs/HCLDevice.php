@@ -14,6 +14,8 @@ class HCLDevice extends IPSModule {
     const UID_OPTION_ELAPSEDPROGRAMTIME = 528;
     const UID_OPTION_DURATION = 548;
     const UID_OPTION_STARTINRELATIVE = 558;
+    const UID_OPTION_ESTIMATEDTOTALPROGRAMTIME = 531;
+    const UID_OPTION_FINISHINRELATIVE = 551;
     
     const VALUE_DOORSTATE_OPEN = 0;
     const VALUE_DOORSTATE_CLOSED = 1;
@@ -91,7 +93,6 @@ class HCLDevice extends IPSModule {
     protected function HCLFormatDuration($duration) {
         $minutes = floor(($duration % 3600) / 60);
         $hours = floor($duration / 3600);
-
         $value = str_pad($hours, 2, '0', STR_PAD_LEFT) . ':' . str_pad($minutes, 2, '0', STR_PAD_LEFT) . 'h';
         return $value;
     }

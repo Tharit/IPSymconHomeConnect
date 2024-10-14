@@ -61,6 +61,9 @@ class HomeConnectLocalWasher extends HCLDevice
             
             $remainingProgramTime = $this->HCLGet($state, self::UID_OPTION_REMAININGPROGRAMTIME, 0);
             
+            $estimatedTotalProgramTime = $this->HCLGet($state, self::UID_OPTION_ESTIMATEDTOTALPROGRAMTIME, 0);
+            $finishInRelative = $this->HCLGet($state, self::UID_OPTION_FINISHINRELATIVE, 0);
+            
             $powerStateBool = $powerState === self::VALUE_POWERSTATE_ON ? true : false;
             $this->SetValue("Power", $powerStateBool);
             if($powerStateBool) {
@@ -75,7 +78,7 @@ class HomeConnectLocalWasher extends HCLDevice
                 $state = 'Off';
             } else {
                 if($operationState === self::VALUE_OPERATIONSTATE_DELAYEDSTART) {
-                    $state = 'Start in ' . $this->HCLFormatDuration($remainingProgramTime);
+                    $state = 'Start in ' . $this->HCLFormatDuration($finishInRelative - $estimatedTotalProgramTime);
                 } else if($operationState === self::VALUE_OPERATIONSTATE_RUN) {
                     if($remainingProgramTime) {
                         $state = $this->HCLFormatDuration($remainingProgramTime) . ' remaining';
