@@ -74,6 +74,7 @@ class HCLDevice extends IPSModule {
             $connected = $connected && $this->MUGetBuffer('DeviceConnected');
         }
         $this->SetValue("Connected", $connected);
+        return $connected;
     }
     
     protected function HCLGet($state, $uid, $default) {

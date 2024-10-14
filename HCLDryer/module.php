@@ -47,8 +47,13 @@ class HomeConnectLocalDryer extends HCLDevice
 
         $Buffer = $data;
 
+
         if (fnmatch('*/LWT', $Buffer->Topic)) {
-            $this->HCLUpdateConnected($Buffer->Topic, $Buffer->Payload);
+            $connected = $this->HCLUpdateConnected($Buffer->Topic, $Buffer->Payload);
+            if(!$connected) {
+                $this->SetValue("Power", false);
+                $this->SetValue("State", 'Off');
+            }
         } else {
             $payload = json_decode($Buffer->Payload);
             $state = $this->HCLUpdateState($payload);
@@ -64,11 +69,14 @@ class HomeConnectLocalDryer extends HCLDevice
             
             $powerStateBool = $powerState === self::VALUE_POWERSTATE_ON ? true : false;
             $this->SetValue("Power", $powerStateBool);
+            /*
+            // @TODO: figure out how to send commands
             if($powerStateBool) {
                 $this->EnableAction("Power");
             } else {
                 $this->DisableAction("Power");
             }
+                */
 
             if($doorState !== self::VALUE_DOORSTATE_CLOSED) {
                 $state = 'Door ' . $this->HCLDoorStateToString($doorState);
@@ -93,8 +101,11 @@ class HomeConnectLocalDryer extends HCLDevice
 
     public function RequestAction($Ident, $Value)
     {
+        // @TODO: figure out how to send commands
+        /*
         if($Ident === 'Power') {
             $this->HCLSendRequest(self::COMMAND_MAINSPOWEROFF, true);
         }
+        */
     }
 }
