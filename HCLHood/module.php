@@ -88,7 +88,7 @@ class HomeConnectLocalHood extends HCLDevice
         $this->SendDebug('Filter', $filter, 0);
         $this->SetReceiveDataFilter('.*(' . $filter . ').*');
 
-        $this->RequestUpdate();
+        $this->HCLRequestUpdate();
     }
 
     public function ReceiveData($JSONString)
