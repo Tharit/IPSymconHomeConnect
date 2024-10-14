@@ -129,7 +129,7 @@ class HomeConnectLocalHood extends IPSModule
             $program = 'N/A';
             
             $powerState = $this->HCLGet($state, self::UID_SETTING_POWERSTATE, self::VALUE_POWERSTATE_OFF);
-            $operationState = $this->HCLGet($state, self::UID_OPERATIONSTATE, self::VALUE_OPERATIONSTATE_INACTIVE);
+            $operationState = $this->HCLGet($state, self::UID_STATUS_OPERATIONSTATE, self::VALUE_OPERATIONSTATE_INACTIVE);
             $activeProgram = $this->HCLGet($state, self::UID_ACTIVEPROGRAM, 0);
             
             $ventingLevel = $this->HCLGet($state, self::UID_OPTION_VENTINGLEVEL, 0);
@@ -158,7 +158,7 @@ class HomeConnectLocalHood extends IPSModule
                 if($operationState === self::VALUE_OPERATIONSTATE_RUN) {
                     $details = $program;
                     // manual mode
-                    if($payload->ActiveProgram === self::UID_PROGRAM_MANUAL) {
+                    if($activeProgram === self::UID_PROGRAM_MANUAL) {
                         $details = 'Level ' . $ventingLevel;
                     // interval or fan run on
                     } else if($activeProgram === self::UID_PROGRAM_INTERVAL || $activeProgram === self::UID_PROGRAM_DELAYEDSHUTOFF) {

@@ -43,11 +43,11 @@ class HomeConnectLocalOven extends IPSModule
     const VALUE_PROGRAM_MICROWAVE_MAX   = 8709;
 
     const VALUE_PROGRAMS_MICROWAVE = [
-        VALUE_PROGRAM_MICROWAVE_90W ,
-        VALUE_PROGRAM_MICROWAVE_180W,
-        VALUE_PROGRAM_MICROWAVE_360W,
-        VALUE_PROGRAM_MICROWAVE_600W,
-        VALUE_PROGRAM_MICROWAVE_MAX 
+        self::VALUE_PROGRAM_MICROWAVE_90W ,
+        self::VALUE_PROGRAM_MICROWAVE_180W,
+        self::VALUE_PROGRAM_MICROWAVE_360W,
+        self::VALUE_PROGRAM_MICROWAVE_600W,
+        self::VALUE_PROGRAM_MICROWAVE_MAX 
     ];
 
     protected function OperationStateToString($state) {
@@ -126,7 +126,7 @@ class HomeConnectLocalOven extends IPSModule
             $payload = json_decode($Buffer->Payload);
 
             $powerState = $this->HCLGet($state, self::UID_SETTING_POWERSTATE, self::VALUE_POWERSTATE_STANDBY);
-            $operationState = $this->HCLGet($state, self::UID_OPERATIONSTATE, self::VALUE_OPERATIONSTATE_INACTIVE);
+            $operationState = $this->HCLGet($state, self::UID_STATUS_OPERATIONSTATE, self::VALUE_OPERATIONSTATE_INACTIVE);
             $activeProgram = $this->HCLGet($state, self::UID_ACTIVEPROGRAM, 0);
 
             $doorState = $this->HCLGet($state, self::UID_STATUS_DOORSTATE, self::VALUE_DOORSTATE_CLOSED);
