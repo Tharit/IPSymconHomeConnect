@@ -1,42 +1,13 @@
 <?php
 
 require_once(__DIR__ . '/../libs/ModuleUtilities.php');
-require_once(__DIR__ . '/../libs/HCLUtilities.php');
+require_once(__DIR__ . '/../libs/HCLDevice.php');
 
-class HomeConnectLocalOven extends IPSModule
+class HomeConnectLocalOven extends HCLDevice
 {
     use ModuleUtilities;
-    use HCLUtilities;
 
-    // generic
-    const UID_ACTIVEPROGRAM = 256;
-    
-    const UID_SETTING_POWERSTATE = 539;
-    
-    const UID_STATUS_OPERATIONSTATE = 552;
-    const UID_STATUS_DOORSTATE = 527;
-    
-    const UID_OPTION_REMAININGPROGRAMTIME = 544;
-    const UID_OPTION_ELAPSEDPROGRAMTIME = 528;
-    const UID_OPTION_DURATION = 548;
-    
-    const VALUE_DOORSTATE_OPEN = 0;
-    const VALUE_DOORSTATE_CLOSED = 1;
-    
-    // const VALUE_POWERSTATE_OFF = 1; / not used by oven
-    const VALUE_POWERSTATE_ON = 2;
-    const VALUE_POWERSTATE_STANDBY = 3;
-    
-    const VALUE_OPERATIONSTATE_INACTIVE         = 0;
-    const VALUE_OPERATIONSTATE_READY            = 1;
-    const VALUE_OPERATIONSTATE_DELAYEDSTART     = 2;
-    const VALUE_OPERATIONSTATE_RUN              = 3;
-    const VALUE_OPERATIONSTATE_PAUSE            = 4;
-    const VALUE_OPERATIONSTATE_ACTIONREQUIRED   = 5;
-    const VALUE_OPERATIONSTATE_FINISHED         = 6;
-    const VALUE_OPERATIONSTATE_ERROR            = 7;
-    const VALUE_OPERATIONSTATE_ABORTING         = 8;
-
+    // oven specific
     const VALUE_PROGRAM_MICROWAVE_90W   = 8705;
     const VALUE_PROGRAM_MICROWAVE_180W  = 8706;
     const VALUE_PROGRAM_MICROWAVE_360W  = 8707;
@@ -51,19 +22,6 @@ class HomeConnectLocalOven extends IPSModule
         self::VALUE_PROGRAM_MICROWAVE_MAX 
     ];
 
-    protected function OperationStateToString($state) {
-        if($state === self::VALUE_OPERATIONSTATE_INACTIVE      ) return "Inactive";
-        if($state === self::VALUE_OPERATIONSTATE_READY         ) return "Ready";
-        if($state === self::VALUE_OPERATIONSTATE_DELAYEDSTART  ) return "Delayed Start";
-        if($state === self::VALUE_OPERATIONSTATE_RUN           ) return "Run";
-        if($state === self::VALUE_OPERATIONSTATE_PAUSE         ) return "Pause";
-        if($state === self::VALUE_OPERATIONSTATE_ACTIONREQUIRED) return "Action required";
-        if($state === self::VALUE_OPERATIONSTATE_FINISHED      ) return "Finished";
-        if($state === self::VALUE_OPERATIONSTATE_ERROR         ) return "Error";
-        if($state === self::VALUE_OPERATIONSTATE_ABORTING      ) return "Aborting";
-    }
-
-    // oven specific
     const UID_STATUS_CURRENTCAVITYTEMPERATURE = 4096;
     
     const UID_OPTION_SETPOINTTEMPERATURE = 5120;
@@ -86,9 +44,7 @@ class HomeConnectLocalOven extends IPSModule
 
         $this->EnableAction("Power");
     
-        // buffers
-        $this->MUSetBuffer('DaemonConnected', false);
-        $this->MUSetBuffer('DeviceConnected', false);
+        $this->HCLInit();
     }
 
     public function ApplyChanges()
@@ -114,15 +70,7 @@ class HomeConnectLocalOven extends IPSModule
         $Buffer = $data;
 
         if (fnmatch('*/LWT', $Buffer->Topic)) {
-            $connected = $Buffer->Payload === 'online' ? true : false;
-            if($Buffer->Topic === $this->ReadPropertyString('Topic') . '/LWT') {
-                $this->MUSetBuffer('DeviceConnected', $connected);
-                $connected = $connected && $this->MUGetBuffer('DaemonConnected');
-            } else {
-                $this->MUSetBuffer('DaemonConnected', $connected);
-                $connected = $connected && $this->MUGetBuffer('DeviceConnected');
-            }
-            $this->SetValue("Connected", $connected);
+            $this->HCLUpdateConnected($Buffer->Topic, $Buffer->Payload);
         } else {
             $payload = json_decode($Buffer->Payload);
             $state = $this->HCLUpdateState($payload);
@@ -148,15 +96,15 @@ class HomeConnectLocalOven extends IPSModule
                 $state = 'Off';
             } else {
                 if($operationState === self::VALUE_OPERATIONSTATE_DELAYEDSTART) {
-                    $state = 'Start in ' . $this->FormatDuration($remainingProgramTime);
+                    $state = 'Start in ' . $this->HCLFormatDuration($remainingProgramTime);
                 } else if($operationState === self::VALUE_OPERATIONSTATE_RUN) {
                     if($duration) {
-                        $state = $this->FormatDuration($remainingProgramTime) . ' remaining';
+                        $state = $this->HCLFormatDuration($remainingProgramTime) . ' remaining';
                     } else if(!in_array($activeProgram, self::VALUE_PROGRAMS_MICROWAVE) &&
                          $currentCavityTemperature < $setpointTemperature) {
                         $state = 'Preheating (' . floor($currentCavityTemperature) . '/' . $setpointTemperature . ')';
                     } else if($elapsedProgramTime) {
-                        $state = $this->FormatDuration($elapsedProgramTime) . ' elapsed';
+                        $state = $this->HCLFormatDuration($elapsedProgramTime) . ' elapsed';
                     } else {
                         $state = 'Running';
                     }
@@ -171,7 +119,7 @@ class HomeConnectLocalOven extends IPSModule
     public function RequestAction($Ident, $Value)
     {
         if($Ident === 'Power') {
-            $this->SendRequest(self::UID_SETTING_POWERSTATE, $Value === false ? self::VALUE_POWERSTATE_STANDBY : self::VALUE_POWERSTATE_ON);
+            $this->HCLSendRequest(self::UID_SETTING_POWERSTATE, $Value === false ? self::VALUE_POWERSTATE_STANDBY : self::VALUE_POWERSTATE_ON);
         }
     }
 }

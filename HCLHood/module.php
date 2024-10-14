@@ -1,27 +1,11 @@
 <?php
 
 require_once(__DIR__ . '/../libs/ModuleUtilities.php');
-require_once(__DIR__ . '/../libs/HCLUtilities.php');
+require_once(__DIR__ . '/../libs/HCLDevice.php');
 
-class HomeConnectLocalHood extends IPSModule
+class HomeConnectLocalHood extends HCLDevice
 {
     use ModuleUtilities;
-    use HCLUtilities;
-
-    // generic
-    const UID_ACTIVEPROGRAM = 256;
-    
-    const UID_SETTING_POWERSTATE = 539;
-    
-    const UID_STATUS_OPERATIONSTATE = 552;
-    
-    const UID_OPTION_REMAININGPROGRAMTIME = 544;
-    
-    const VALUE_POWERSTATE_OFF = 1;
-    const VALUE_POWERSTATE_ON = 2;
-
-    const VALUE_OPERATIONSTATE_INACTIVE = 0;
-    const VALUE_OPERATIONSTATE_RUN = 3;
 
     // hood specific
     const UID_STATUS_GREASEFILTERSATURATION = 4100;
@@ -50,11 +34,9 @@ class HomeConnectLocalHood extends IPSModule
 
     public function Create()
     {
-        // buffers
-        $this->HCLInit();
-
         //Never delete this line!
         parent::Create();
+
         $this->ConnectParent('{C6D2AEB3-6E1F-4B2E-8E69-3A1A00246850}');
 
         // properties
@@ -92,6 +74,8 @@ class HomeConnectLocalHood extends IPSModule
         $this->EnableAction("Program");
         $this->EnableAction("Lighting");
         $this->EnableAction("Power");
+
+        $this->HCLInit();
     }
 
     public function ApplyChanges()
@@ -162,7 +146,7 @@ class HomeConnectLocalHood extends IPSModule
                         $details = 'Level ' . $ventingLevel;
                     // interval or fan run on
                     } else if($activeProgram === self::UID_PROGRAM_INTERVAL || $activeProgram === self::UID_PROGRAM_DELAYEDSHUTOFF) {
-                        $details .= ' (' . $this->FormatDuration($remainingProgramTime) . ' remaining)';
+                        $details .= ' (' . $this->HCLFormatDuration($remainingProgramTime) . ' remaining)';
                     }
                     $state = $details;
                 } else {
@@ -176,21 +160,21 @@ class HomeConnectLocalHood extends IPSModule
     public function RequestAction($Ident, $Value)
     {
         if($Ident === 'Power') {
-            $this->SendRequest(self::UID_SETTING_POWERSTATE, $Value === false ? self::VALUE_POWERSTATE_OFF : self::VALUE_POWERSTATE_ON);
+            $this->HCLSendRequest(self::UID_SETTING_POWERSTATE, $Value === false ? self::VALUE_POWERSTATE_OFF : self::VALUE_POWERSTATE_ON);
         } else if($Ident === 'Lighting') {
-            $this->SendRequest(self::UID_SETTING_LIGHTING, $Value === true ? true : false);
+            $this->HCLSendRequest(self::UID_SETTING_LIGHTING, $Value === true ? true : false);
         } else if($Ident === 'Program') {
             if(!in_array($Value, self::UID_PROGRAMS)) return;
             if($Value === 0) {
-                $this->SendRequest(self::UID_SETTING_POWERSTATE, self::VALUE_POWERSTATE_OFF);
+                $this->HCLSendRequest(self::UID_SETTING_POWERSTATE, self::VALUE_POWERSTATE_OFF);
             } else {
-                $this->StartProgram($Value);
+                $this->HCLStartProgram($Value);
             }
         } else if($Ident === 'VentingLevel') {
             if($Value <= 0 || $Value >= 4) {
-                $this->SendRequest(self::UID_SETTING_POWERSTATE, self::VALUE_POWERSTATE_OFF);
+                $this->HCLSendRequest(self::UID_SETTING_POWERSTATE, self::VALUE_POWERSTATE_OFF);
             } else {
-                $this->StartProgram(self::UID_PROGRAM_MANUAL, [
+                $this->HCLStartProgram(self::UID_PROGRAM_MANUAL, [
                     ["uid" => self::UID_OPTION_VENTINGLEVEL, "value" => $Value]
                 ]);
             }

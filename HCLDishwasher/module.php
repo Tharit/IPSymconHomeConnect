@@ -1,7 +1,12 @@
 <?php
 
-class HomeConnectLocalDishwasher extends IPSModule
+require_once(__DIR__ . '/../libs/ModuleUtilities.php');
+require_once(__DIR__ . '/../libs/HCLDevice.php');
+
+class HomeConnectLocalDishwasher extends HCLDevice
 {
+    use ModuleUtilities;
+
     public function Create()
     {
         //Never delete this line!
@@ -13,7 +18,13 @@ class HomeConnectLocalDishwasher extends IPSModule
         $this->RegisterPropertyString('Topic', 'homeconnect/dishwasher');
 
         // variables
-        $this->RegisterVariableBoolean("Connected", "Connected");
+        $this->RegisterVariableBoolean("Connected", "Connected", "", 0);
+        $this->RegisterVariableBoolean("Power", "Power", "~Switch", 1);
+        $this->RegisterVariableString("State", "State", "", 2);
+
+        $this->EnableAction("Power");
+    
+        $this->HCLInit();
     }
 
     public function ApplyChanges()
@@ -22,7 +33,11 @@ class HomeConnectLocalDishwasher extends IPSModule
         parent::ApplyChanges();
 
         $topic = $this->ReadPropertyString('Topic');
-        $this->SetReceiveDataFilter('.*' . $topic . '.*');
+        $filter = implode('/', array_slice(explode('/', $topic), 0, -1)) . '/LWT|' . $topic . '/.*';
+        $this->SendDebug('Filter', $filter, 0);
+        $this->SetReceiveDataFilter('.*(' . $filter . ').*');
+
+        $this->HCLRequestUpdate();
     }
 
     public function ReceiveData($JSONString)
@@ -35,15 +50,48 @@ class HomeConnectLocalDishwasher extends IPSModule
         $Buffer = $data;
 
         if (fnmatch('*/LWT', $Buffer->Topic)) {
-            $this->SetValue("Connected", $Buffer->Payload === 'online' ? true : false);
+            $this->HCLUpdateConnected($Buffer->Topic, $Buffer->Payload);
+        } else {
+            $payload = json_decode($Buffer->Payload);
+            $state = $this->HCLUpdateState($payload);
+
+            $powerState = $this->HCLGet($state, self::UID_SETTING_POWERSTATE, self::VALUE_POWERSTATE_STANDBY);
+            $operationState = $this->HCLGet($state, self::UID_STATUS_OPERATIONSTATE, self::VALUE_OPERATIONSTATE_INACTIVE);
+            $activeProgram = $this->HCLGet($state, self::UID_ACTIVEPROGRAM, 0);
+
+            $doorState = $this->HCLGet($state, self::UID_STATUS_DOORSTATE, self::VALUE_DOORSTATE_CLOSED);
+            
+            $remainingProgramTime = $this->HCLGet($state, self::UID_OPTION_REMAININGPROGRAMTIME, 0);
+            $elapsedProgramTime = $this->HCLGet($state, self::UID_OPTION_ELAPSEDPROGRAMTIME, 0);
+            $duration = $this->HCLGet($state, self::UID_OPTION_DURATION, 0);
+
+            $this->SetValue("Power", $powerState === self::VALUE_POWERSTATE_ON ? true : false);
+
+            if($doorState !== self::VALUE_DOORSTATE_CLOSED) {
+                $state = $this->HCLDoorStateToString('Door open');
+            } else if($powerState !== self::VALUE_POWERSTATE_ON) {
+                $state = 'Off';
+            } else {
+                if($operationState === self::VALUE_OPERATIONSTATE_DELAYEDSTART) {
+                    $state = 'Start in ' . $this->HCLFormatDuration($remainingProgramTime);
+                } else if($operationState === self::VALUE_OPERATIONSTATE_RUN) {
+                    if($duration) {
+                        $state = $this->HCLFormatDuration($remainingProgramTime) . ' remaining';
+                    } else {
+                        $state = 'Running';
+                    }
+                } else {
+                    $state = $this->HCLOperationStateToString($operationState);
+                }
+            }
+            $this->SetValue("State", $state);
         }
     }
 
     public function RequestAction($Ident, $Value)
     {
-    }
-
-    public function SendRequest(string $Ident, string $Value)
-    {
+        if($Ident === 'Power') {
+            $this->HCLSendRequest(self::UID_SETTING_POWERSTATE, $Value === false ? self::VALUE_POWERSTATE_OFF : self::VALUE_POWERSTATE_ON);
+        }
     }
 }
