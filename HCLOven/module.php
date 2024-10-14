@@ -23,9 +23,10 @@ class HomeConnectLocalOven extends IPSModule
     const VALUE_DOORSTATE_OPEN = 0;
     const VALUE_DOORSTATE_CLOSED = 1;
     
-    const VALUE_POWERSTATE_OFF = 1;
+    // const VALUE_POWERSTATE_OFF = 1; / not used by oven
     const VALUE_POWERSTATE_ON = 2;
-
+    const VALUE_POWERSTATE_STANDBY = 3;
+    
     const VALUE_OPERATIONSTATE_INACTIVE         = 0;
     const VALUE_OPERATIONSTATE_READY            = 1;
     const VALUE_OPERATIONSTATE_DELAYEDSTART     = 2;
@@ -125,7 +126,7 @@ class HomeConnectLocalOven extends IPSModule
         } else {
             $payload = json_decode($Buffer->Payload);
             $state = $this->HCLUpdateState($payload);
-            
+
             $powerState = $this->HCLGet($state, self::UID_SETTING_POWERSTATE, self::VALUE_POWERSTATE_STANDBY);
             $operationState = $this->HCLGet($state, self::UID_STATUS_OPERATIONSTATE, self::VALUE_OPERATIONSTATE_INACTIVE);
             $activeProgram = $this->HCLGet($state, self::UID_ACTIVEPROGRAM, 0);
