@@ -70,7 +70,7 @@ class HomeConnectLocalWasher extends HCLDevice
             }
 
             if($doorState !== self::VALUE_DOORSTATE_CLOSED) {
-                $state = $this->HCLDoorStateToString('Door open');
+                $state = $this->HCLDoorStateToString($doorState);
             } else if($powerState !== self::VALUE_POWERSTATE_ON) {
                 $state = 'Off';
             } else {
