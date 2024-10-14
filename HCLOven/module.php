@@ -124,7 +124,8 @@ class HomeConnectLocalOven extends IPSModule
             $this->SetValue("Connected", $connected);
         } else {
             $payload = json_decode($Buffer->Payload);
-
+            $state = $this->HCLUpdateState($payload);
+            
             $powerState = $this->HCLGet($state, self::UID_SETTING_POWERSTATE, self::VALUE_POWERSTATE_STANDBY);
             $operationState = $this->HCLGet($state, self::UID_STATUS_OPERATIONSTATE, self::VALUE_OPERATIONSTATE_INACTIVE);
             $activeProgram = $this->HCLGet($state, self::UID_ACTIVEPROGRAM, 0);
