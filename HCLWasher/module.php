@@ -18,7 +18,7 @@ class HomeConnectLocalWasher extends HCLDevice
         $this->RegisterPropertyString('Topic', 'homeconnect/washer');
 
         // profiles
-        $this->RegisterProfileIntegerEx('HomeConnectLocalWasher.Power', 'Power', '', '', [
+        $this->RegisterProfileBooleanEx('HomeConnectLocalWasher.Power', 'Power', '', '', [
             [false, 'Off',  '', -1],
             [true, 'On',  '', -1]
         ]);
