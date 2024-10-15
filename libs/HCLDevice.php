@@ -59,7 +59,7 @@ class HCLDevice extends IPSModule {
     }
 
     protected function HCLHandleEvents($events, $payload) {
-        $events = [];
+        $updates = [];
         foreach($events as $event) {
             if(!isset($payload[$event['uid']])) continue;
             $value = $payload[$event['uid']];
@@ -67,19 +67,19 @@ class HCLDevice extends IPSModule {
             // skip confirmed events, treat as cleared
             if($value === 2) $value = 0;
 
-            $events[] = [
+            $updates[] = [
                 "Name" => $event['name'],
                 "Description" => $event['desc'],
                 "Level" => $event['level'],
                 "Value" => $value
             ];
         }
-        if(count($events) > 0) {
+        if(count($updates) > 0) {
             $script = $this->ReadPropertyInteger('script');
             if($script && @IPS_GetScript($script)) {
                 IPS_RunScriptEx($script, [
                     "Device" => IPS_GetParent($this->GetIDForIdent("Connected")),
-                    "Events" => $events
+                    "Events" => $updates
                 ]);
             }
         }

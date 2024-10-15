@@ -261,6 +261,7 @@ class HomeConnectLocalDryer extends HCLDevice
             $doorState = $this->HCLGet($state, self::UID_STATUS_DOORSTATE, self::VALUE_DOORSTATE_CLOSED);
             
             $estimatedTotalProgramTime = $this->HCLGet($state, self::UID_OPTION_ESTIMATEDTOTALPROGRAMTIME, 0);
+            $remainingProgramTime = $this->HCLGet($state, self::UID_OPTION_REMAININGPROGRAMTIME, 0);
             $finishInRelative = $this->HCLGet($state, self::UID_OPTION_FINISHINRELATIVE, 0);
             
             $powerStateBool = $powerState === self::VALUE_POWERSTATE_ON ? true : false;
