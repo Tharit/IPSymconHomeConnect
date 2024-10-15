@@ -78,8 +78,10 @@ class HCLDevice extends IPSModule {
             $script = $this->ReadPropertyInteger('script');
             if($script && @IPS_GetScript($script)) {
                 IPS_RunScriptEx($script, [
-                    "Device" => IPS_GetParent($this->GetIDForIdent("Connected")),
-                    "Events" => $updates
+                    "Data" => json_encode([
+                        "Device" => IPS_GetParent($this->GetIDForIdent("Connected")),
+                        "Events" => $updates
+                    ])
                 ]);
             }
         }
