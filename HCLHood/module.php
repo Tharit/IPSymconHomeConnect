@@ -28,6 +28,87 @@ class HomeConnectLocalHood extends HCLDevice
 
     const UID_SETTING_LIGHTING = 53253;
 
+    const EVENTS = [
+        [
+                "uid" => 577,
+                "name" => "BSH.Common.Event.ConnectLocalWiFi",
+                "desc" => "BSH.Common.Event.ConnectLocalWiFi",
+                "level" => "warning"
+        ],
+        [
+                "uid" => 559,
+                "name" => "BSH.Common.Event.CustomerServiceRequest",
+                "desc" => "BSH.Common.Event.CustomerServiceRequest",
+                "level" => "hint"
+        ],
+        [
+                "uid" => 540,
+                "name" => "BSH.Common.Event.ProgramFinished",
+                "desc" => "BSH.Common.Event.ProgramFinished",
+                "level" => "hint"
+        ],
+        [
+                "uid" => 593,
+                "name" => "BSH.Common.Event.SoftwareDownloadAvailable",
+                "desc" => "BSH.Common.Event.SoftwareDownloadAvailable",
+                "level" => "hint"
+        ],
+        [
+                "uid" => 21,
+                "name" => "BSH.Common.Event.SoftwareUpdateAvailable",
+                "desc" => "BSH.Common.Event.SoftwareUpdateAvailable",
+                "level" => "hint"
+        ],
+        [
+                "uid" => 595,
+                "name" => "BSH.Common.Event.SoftwareUpdateSuccessful",
+                "desc" => "BSH.Common.Event.SoftwareUpdateSuccessful",
+                "level" => "hint"
+        ],
+        [
+                "uid" => 55298,
+                "name" => "Cooking.Common.Event.Hood.CarbonFilterMaxSaturationNearlyReached",
+                "desc" => "Cooking.Common.Event.Hood.CarbonFilterMaxSaturationNearlyReached",
+                "level" => "hint"
+        ],
+        [
+                "uid" => 55299,
+                "name" => "Cooking.Common.Event.Hood.CarbonFilterMaxSaturationReached",
+                "desc" => "Cooking.Common.Event.Hood.CarbonFilterMaxSaturationReached",
+                "level" => "warning"
+        ],
+        [
+                "uid" => 55302,
+                "name" => "Cooking.Common.Event.Hood.GreaseFilterMaxSaturationNearlyReached",
+                "desc" => "Cooking.Common.Event.Hood.GreaseFilterMaxSaturationNearlyReached",
+                "level" => "hint"
+        ],
+        [
+                "uid" => 55303,
+                "name" => "Cooking.Common.Event.Hood.GreaseFilterMaxSaturationReached",
+                "desc" => "Cooking.Common.Event.Hood.GreaseFilterMaxSaturationReached",
+                "level" => "warning"
+        ],
+        [
+                "uid" => 55310,
+                "name" => "Cooking.Common.Event.Hood.RegenerativeCarbonFilterLifeTimeExceeded",
+                "desc" => "Cooking.Common.Event.Hood.RegenerativeCarbonFilterLifeTimeExceeded",
+                "level" => "warning"
+        ],
+        [
+                "uid" => 55314,
+                "name" => "Cooking.Common.Event.Hood.RegenerativeCarbonFilterLifeTimeNearlyExceeded",
+                "desc" => "Cooking.Common.Event.Hood.RegenerativeCarbonFilterLifeTimeNearlyExceeded",
+                "level" => "hint"
+        ],
+        [
+                "uid" => 55312,
+                "name" => "Cooking.Common.Event.Hood.RegenerativeCarbonFilterMaxSaturationReached",
+                "desc" => "Cooking.Common.Event.Hood.RegenerativeCarbonFilterMaxSaturationReached",
+                "level" => "warning"
+        ]
+    ];
+
     /**
      * @TODO: define static variables for UIDs
      */
@@ -41,6 +122,7 @@ class HomeConnectLocalHood extends HCLDevice
 
         // properties
         $this->RegisterPropertyString('Topic', 'homeconnect/hood');
+        $this->RegisterPropertyInteger('script', '0');
 
         // profiles
         $this->RegisterProfileIntegerEx('HomeConnectLocalHood.Program', 'Program', '', '', [
@@ -105,8 +187,8 @@ class HomeConnectLocalHood extends HCLDevice
         } else {
             $payload = json_decode($Buffer->Payload, true);
 
-            // detect events
-            // @TODO, call script with all events contained in payload
+            // handle events
+            $this->HCLHandleEvents(self::EVENTS, $payload);
 
             $state = $this->HCLUpdateState($payload);
             

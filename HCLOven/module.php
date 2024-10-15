@@ -26,6 +26,147 @@ class HomeConnectLocalOven extends HCLDevice
     
     const UID_OPTION_SETPOINTTEMPERATURE = 5120;
 
+    const EVENTS = [
+        [
+                "uid" => 567,
+                "name" => "BSH.Common.Event.AlarmClockElapsed",
+                "desc" => "BSH.Common.Event.AlarmClockElapsed",
+                "level" => "hint"
+        ],
+        [
+                "uid" => 559,
+                "name" => "BSH.Common.Event.CustomerServiceRequest",
+                "desc" => "BSH.Common.Event.CustomerServiceRequest",
+                "level" => "hint"
+        ],
+        [
+                "uid" => 545,
+                "name" => "BSH.Common.Event.ProgramAborted",
+                "desc" => "BSH.Common.Event.ProgramAborted",
+                "level" => "hint"
+        ],
+        [
+                "uid" => 540,
+                "name" => "BSH.Common.Event.ProgramFinished",
+                "desc" => "BSH.Common.Event.ProgramFinished",
+                "level" => "hint"
+        ],
+        [
+                "uid" => 21,
+                "name" => "BSH.Common.Event.SoftwareUpdateAvailable",
+                "desc" => "BSH.Common.Event.SoftwareUpdateAvailable",
+                "level" => "hint"
+        ],
+        [
+                "uid" => 4625,
+                "name" => "Cooking.Oven.Event.ApplianceModuleError",
+                "desc" => "Cooking.Oven.Event.ApplianceModuleError",
+                "level" => "alert"
+        ],
+        [
+                "uid" => 4615,
+                "name" => "Cooking.Oven.Event.BakingSensorProgramAborted",
+                "desc" => "Cooking.Oven.Event.BakingSensorProgramAborted",
+                "level" => "warning"
+        ],
+        [
+                "uid" => 4622,
+                "name" => "Cooking.Oven.Event.CavityHeatup",
+                "desc" => "Cooking.Oven.Event.CavityHeatup",
+                "level" => "hint"
+        ],
+        [
+                "uid" => 4617,
+                "name" => "Cooking.Oven.Event.CavityTemperatureTooHigh",
+                "desc" => "Cooking.Oven.Event.CavityTemperatureTooHigh",
+                "level" => "warning"
+        ],
+        [
+                "uid" => 4609,
+                "name" => "Cooking.Oven.Event.CloseFrontPanel",
+                "desc" => "Cooking.Oven.Event.CloseFrontPanel",
+                "level" => "warning"
+        ],
+        [
+                "uid" => 4620,
+                "name" => "Cooking.Oven.Event.DescalingRequest",
+                "desc" => "Cooking.Oven.Event.DescalingRequest",
+                "level" => "hint"
+        ],
+        [
+                "uid" => 4626,
+                "name" => "Cooking.Oven.Event.EmptyWaterContainer",
+                "desc" => "Cooking.Oven.Event.EmptyWaterContainer",
+                "level" => "warning"
+        ],
+        [
+                "uid" => 4614,
+                "name" => "Cooking.Oven.Event.ForceDraining",
+                "desc" => "Cooking.Oven.Event.ForceDraining",
+                "level" => "warning"
+        ],
+        [
+                "uid" => 4613,
+                "name" => "Cooking.Oven.Event.ForceFlushing",
+                "desc" => "Cooking.Oven.Event.ForceFlushing",
+                "level" => "warning"
+        ],
+        [
+                "uid" => 4608,
+                "name" => "Cooking.Oven.Event.InsertWaterContainer",
+                "desc" => "Cooking.Oven.Event.InsertWaterContainer",
+                "level" => "warning"
+        ],
+        [
+                "uid" => 4624,
+                "name" => "Cooking.Oven.Event.MeatprobeIncompatibleOperation",
+                "desc" => "Cooking.Oven.Event.MeatprobeIncompatibleOperation",
+                "level" => "warning"
+        ],
+        [
+                "uid" => 4623,
+                "name" => "Cooking.Oven.Event.OperatingTimeLimitReached",
+                "desc" => "Cooking.Oven.Event.OperatingTimeLimitReached",
+                "level" => "warning"
+        ],
+        [
+                "uid" => 4616,
+                "name" => "Cooking.Oven.Event.OvenLockWhileCoolingDown",
+                "desc" => "Cooking.Oven.Event.OvenLockWhileCoolingDown",
+                "level" => "warning"
+        ],
+        [
+                "uid" => 4612,
+                "name" => "Cooking.Oven.Event.PreheatFinished",
+                "desc" => "Cooking.Oven.Event.PreheatFinished",
+                "level" => "hint"
+        ],
+        [
+                "uid" => 4618,
+                "name" => "Cooking.Oven.Event.SubsequentCookingRequest",
+                "desc" => "Cooking.Oven.Event.SubsequentCookingRequest",
+                "level" => "hint"
+        ],
+        [
+                "uid" => 4619,
+                "name" => "Cooking.Oven.Event.UserInteractionRequired",
+                "desc" => "Cooking.Oven.Event.UserInteractionRequired",
+                "level" => "hint"
+        ],
+        [
+                "uid" => 4611,
+                "name" => "Cooking.Oven.Event.WaterContainerEmpty",
+                "desc" => "Cooking.Oven.Event.WaterContainerEmpty",
+                "level" => "warning"
+        ],
+        [
+                "uid" => 4610,
+                "name" => "Cooking.Oven.Event.WaterContainerNearlyEmpty",
+                "desc" => "Cooking.Oven.Event.WaterContainerNearlyEmpty",
+                "level" => "hint"
+        ]
+    ];
+
     public function Create()
     {
         //Never delete this line!
@@ -35,6 +176,7 @@ class HomeConnectLocalOven extends HCLDevice
 
         // properties
         $this->RegisterPropertyString('Topic', 'homeconnect/oven');
+        $this->RegisterPropertyInteger('script', '0');
 
         // variables
         $this->RegisterVariableBoolean("Connected", "Connected", "", 0);
@@ -73,6 +215,10 @@ class HomeConnectLocalOven extends HCLDevice
             $this->HCLUpdateConnected($Buffer->Topic, $Buffer->Payload);
         } else {
             $payload = json_decode($Buffer->Payload, true);
+            
+            // handle events
+            $this->HCLHandleEvents(self::EVENTS, $payload);
+
             $state = $this->HCLUpdateState($payload);
 
             $powerState = $this->HCLGet($state, self::UID_SETTING_POWERSTATE, self::VALUE_POWERSTATE_STANDBY);

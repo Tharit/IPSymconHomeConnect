@@ -7,6 +7,8 @@ class HomeConnectLocalDryer extends HCLDevice
 {
     use ModuleUtilities;
 
+    const EVENT_DRYINGPROCESSFINISHED = 17668;
+    
     const EVENTS = [
         [
             "uid" => 559,
@@ -252,6 +254,10 @@ class HomeConnectLocalDryer extends HCLDevice
             }
         } else {
             $payload = json_decode($Buffer->Payload, true);
+
+            // handle events
+            $this->HCLHandleEvents(self::EVENTS, $payload);
+
             $state = $this->HCLUpdateState($payload);
 
             $powerState = $this->HCLGet($state, self::UID_SETTING_POWERSTATE, self::VALUE_POWERSTATE_STANDBY);
@@ -266,10 +272,6 @@ class HomeConnectLocalDryer extends HCLDevice
             
             $powerStateBool = $powerState === self::VALUE_POWERSTATE_ON ? true : false;
             $this->SetValue("Power", $powerStateBool);
-
-            // handle events
-            $this->HCLHandleEvents(self::EVENTS, $payload);
-
             /*
             // @TODO: figure out how to send commands
             if($powerStateBool) {
@@ -290,7 +292,12 @@ class HomeConnectLocalDryer extends HCLDevice
                     if($remainingProgramTime) {
                         $state = $this->HCLFormatDuration($remainingProgramTime) . ' remaining';
                     } else {
-                        $state = 'Running';
+                        // if event LaundryCare.Dryer.Event.DryingProcessFinished is set, show finished here
+                        if($this->HCLGet($state, self::EVENT_DRYINGPROCESSFINISHED, 0) === 1) {
+                            $state = 'Finished';
+                        } else {
+                            $state = 'Running';
+                        }
                     }
                 } else {
                     $state = $this->HCLOperationStateToString($operationState);
