@@ -205,6 +205,7 @@ class HomeConnectLocalDryer extends HCLDevice
 
         // properties
         $this->RegisterPropertyString('Topic', 'homeconnect/dryer');
+        $this->RegisterPropertyInteger('script', '0');
 
         // profiles
         $this->RegisterProfileBooleanEx('HomeConnectLocalDryer.Power', 'Power', '', '', [
@@ -216,7 +217,7 @@ class HomeConnectLocalDryer extends HCLDevice
         $this->RegisterVariableBoolean("Connected", "Connected", "", 0);
         $this->RegisterVariableBoolean("Power", "Power", "HomeConnectLocalDryer.Power", 1);
         $this->RegisterVariableString("State", "State", "", 2);
-
+        
         $this->HCLInit();
     }
 
