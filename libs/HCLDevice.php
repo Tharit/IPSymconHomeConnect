@@ -71,6 +71,7 @@ class HCLDevice extends IPSModule {
                 "Name" => $event['name'],
                 "Description" => $event['desc'],
                 "Level" => $event['level'],
+                "Id" => $event['uid'],
                 "Value" => $value
             ];
         }
