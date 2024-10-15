@@ -5,6 +5,11 @@
                 "name": "Topic",
                 "type": "ValidationTextBox",
                 "caption": "MQTT Topic"
+            },
+            {
+                "name": "script",
+                "type": "SelectScript",
+                "caption": "Event handler script"
             }
         ]
 }
