@@ -72,7 +72,7 @@ class HomeConnectLocalOven extends HCLDevice
         if (fnmatch('*/LWT', $Buffer->Topic)) {
             $this->HCLUpdateConnected($Buffer->Topic, $Buffer->Payload);
         } else {
-            $payload = json_decode($Buffer->Payload);
+            $payload = json_decode($Buffer->Payload, true);
             $state = $this->HCLUpdateState($payload);
 
             $powerState = $this->HCLGet($state, self::UID_SETTING_POWERSTATE, self::VALUE_POWERSTATE_STANDBY);

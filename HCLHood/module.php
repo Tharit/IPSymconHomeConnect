@@ -103,7 +103,7 @@ class HomeConnectLocalHood extends HCLDevice
         if (fnmatch('*/LWT', $Buffer->Topic)) {
             $this->HCLUpdateConnected($Buffer->Topic, $Buffer->Payload);
         } else {
-            $payload = json_decode($Buffer->Payload);
+            $payload = json_decode($Buffer->Payload, true);
 
             // detect events
             // @TODO, call script with all events contained in payload

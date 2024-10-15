@@ -60,7 +60,7 @@ class HomeConnectLocalWasher extends HCLDevice
                 $this->SetValue("State", 'Off');
             }
         } else {
-            $payload = json_decode($Buffer->Payload);
+            $payload = json_decode($Buffer->Payload, true);
             $state = $this->HCLUpdateState($payload);
 
             $powerState = $this->HCLGet($state, self::UID_SETTING_POWERSTATE, self::VALUE_POWERSTATE_STANDBY);
