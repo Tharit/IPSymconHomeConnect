@@ -58,6 +58,33 @@ class HCLDevice extends IPSModule {
         if($state === self::VALUE_OPERATIONSTATE_ABORTING      ) return "Aborting";
     }
 
+    protected function HCLHandleEvents($events, $payload) {
+        $events = [];
+        foreach($events as $event) {
+            if(!isset($payload[$event['uid']])) continue;
+            $value = $payload[$event['uid']];
+            
+            // skip confirmed events, treat as cleared
+            if($value === 2) $value = 0;
+
+            $events[] = [
+                "Name" => $event['name'],
+                "Description" => $event['desc'],
+                "Level" => $event['level'],
+                "Value" => $value
+            ];
+        }
+        if(count($events) > 0) {
+            $script = $this->ReadPropertyInteger('script');
+            if($script && @IPS_GetScript($script)) {
+                IPS_RunScriptEx($script, [
+                    "Device" => IPS_GetParent($this->GetIDForIdent("Connected")),
+                    "Events" => $events
+                ]);
+            }
+        }
+    }
+
     protected function HCLInit() {
         $this->MUSetBuffer('DaemonConnected', false);
         $this->MUSetBuffer('DeviceConnected', false);

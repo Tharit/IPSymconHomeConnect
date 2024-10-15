@@ -7,6 +7,195 @@ class HomeConnectLocalDryer extends HCLDevice
 {
     use ModuleUtilities;
 
+    const EVENTS = [
+        [
+            "uid" => 559,
+            "name" => "BSH.Common.Event.CustomerServiceRequest",
+            "desc" => "BSH.Common.Event.CustomerServiceRequest",
+            "level" => "hint"
+        ],
+        [
+            "uid" => 598,
+            "name" => "BSH.Common.Event.HomeConnectApplianceDataMissing",
+            "desc" => "BSH.Common.Event.HomeConnectApplianceDataMissing",
+            "level" => "hint"
+        ],
+        [
+            "uid" => 545,
+            "name" => "BSH.Common.Event.ProgramAborted",
+            "desc" => "BSH.Common.Event.ProgramAborted",
+            "level" => "hint"
+        ],
+        [
+            "uid" => 540,
+            "name" => "BSH.Common.Event.ProgramFinished",
+            "desc" => "BSH.Common.Event.ProgramFinished",
+            "level" => "hint"
+        ],
+        [
+            "uid" => 21,
+            "name" => "BSH.Common.Event.SoftwareUpdateAvailable",
+            "desc" => "BSH.Common.Event.SoftwareUpdateAvailable",
+            "level" => "hint"
+        ],
+        [
+            "uid" => 18954,
+            "name" => "LaundryCare.Common.Event.DelayedShutdown",
+            "desc" => "LaundryCare.Common.Event.DelayedShutdown",
+            "level" => "hint"
+        ],
+        [
+            "uid" => 18955,
+            "name" => "LaundryCare.Common.Event.DelayedShutdownCanceled",
+            "desc" => "LaundryCare.Common.Event.DelayedShutdownCanceled",
+            "level" => "info"
+        ],
+        [
+            "uid" => 18951,
+            "name" => "LaundryCare.Common.Event.DoorOpen",
+            "desc" => "LaundryCare.Common.Event.DoorOpen",
+            "level" => "alert"
+        ],
+        [
+            "uid" => 18946,
+            "name" => "LaundryCare.Common.Event.FatalErrorOccured",
+            "desc" => "LaundryCare.Common.Event.FatalErrorOccured",
+            "level" => "critical"
+        ],
+        [
+            "uid" => 18956,
+            "name" => "LaundryCare.Common.Event.SupplyPower.SupplyVoltageTooLow",
+            "desc" => "LaundryCare.Common.Event.SupplyPower.SupplyVoltageTooLow",
+            "level" => "alert"
+        ],
+        [
+            "uid" => 17665,
+            "name" => "LaundryCare.Dryer.Event.CondensateContainerFull",
+            "desc" => "LaundryCare.Dryer.Event.CondensateContainerFull",
+            "level" => "alert"
+        ],
+        [
+            "uid" => 17672,
+            "name" => "LaundryCare.Dryer.Event.CondensateTray.TrayOpen",
+            "desc" => "LaundryCare.Dryer.Event.CondensateTray.TrayOpen",
+            "level" => "warning"
+        ],
+        [
+            "uid" => 17685,
+            "name" => "LaundryCare.Dryer.Event.ConnectedDry.DontDry",
+            "desc" => "LaundryCare.Dryer.Event.ConnectedDry.DontDry",
+            "level" => "hint"
+        ],
+        [
+            "uid" => 17680,
+            "name" => "LaundryCare.Dryer.Event.ConnectedDry.DontDrySilk",
+            "desc" => "LaundryCare.Dryer.Event.ConnectedDry.DontDrySilk",
+            "level" => "hint"
+        ],
+        [
+            "uid" => 17684,
+            "name" => "LaundryCare.Dryer.Event.ConnectedDry.LaundryTooMoist",
+            "desc" => "LaundryCare.Dryer.Event.ConnectedDry.LaundryTooMoist",
+            "level" => "hint"
+        ],
+        [
+            "uid" => 17682,
+            "name" => "LaundryCare.Dryer.Event.ConnectedDry.NoDryingProgram",
+            "desc" => "LaundryCare.Dryer.Event.ConnectedDry.NoDryingProgram",
+            "level" => "hint"
+        ],
+        [
+            "uid" => 17681,
+            "name" => "LaundryCare.Dryer.Event.ConnectedDry.SingleDryLargeItems",
+            "desc" => "LaundryCare.Dryer.Event.ConnectedDry.SingleDryLargeItems",
+            "level" => "hint"
+        ],
+        [
+            "uid" => 17686,
+            "name" => "LaundryCare.Dryer.Event.ConnectedDry.UseBasket",
+            "desc" => "LaundryCare.Dryer.Event.ConnectedDry.UseBasket",
+            "level" => "hint"
+        ],
+        [
+            "uid" => 17683,
+            "name" => "LaundryCare.Dryer.Event.ConnectedDry.WasherTooLoaded",
+            "desc" => "LaundryCare.Dryer.Event.ConnectedDry.WasherTooLoaded",
+            "level" => "hint"
+        ],
+        [
+            "uid" => 17669,
+            "name" => "LaundryCare.Dryer.Event.CoolDownPhaseRunning",
+            "desc" => "LaundryCare.Dryer.Event.CoolDownPhaseRunning",
+            "level" => "hint"
+        ],
+        [
+            "uid" => 17671,
+            "name" => "LaundryCare.Dryer.Event.DryerSelfCleaning.CleanLintFilter",
+            "desc" => "LaundryCare.Dryer.Event.DryerSelfCleaning.CleanLintFilter",
+            "level" => "warning"
+        ],
+        [
+            "uid" => 17670,
+            "name" => "LaundryCare.Dryer.Event.DryerSelfCleaning.CleanSelfCleaningModule",
+            "desc" => "LaundryCare.Dryer.Event.DryerSelfCleaning.CleanSelfCleaningModule",
+            "level" => "warning"
+        ],
+        [
+            "uid" => 17668,
+            "name" => "LaundryCare.Dryer.Event.DryingProcessFinished",
+            "desc" => "LaundryCare.Dryer.Event.DryingProcessFinished",
+            "level" => "hint"
+        ],
+        [
+            "uid" => 17687,
+            "name" => "LaundryCare.Dryer.Event.EvaporatorFrozen",
+            "desc" => "LaundryCare.Dryer.Event.EvaporatorFrozen",
+            "level" => "warning"
+        ],
+        [
+            "uid" => 17666,
+            "name" => "LaundryCare.Dryer.Event.LintFilterFull",
+            "desc" => "LaundryCare.Dryer.Event.LintFilterFull",
+            "level" => "alert"
+        ],
+        [
+            "uid" => 17677,
+            "name" => "LaundryCare.Dryer.Event.Maintenance.DepthFillAgent",
+            "desc" => "LaundryCare.Dryer.Event.Maintenance.DepthFillAgent",
+            "level" => "hint"
+        ],
+        [
+            "uid" => 17679,
+            "name" => "LaundryCare.Dryer.Event.Maintenance.DepthFillWater",
+            "desc" => "LaundryCare.Dryer.Event.Maintenance.DepthFillWater",
+            "level" => "warning"
+        ],
+        [
+            "uid" => 17676,
+            "name" => "LaundryCare.Dryer.Event.Maintenance.DrainSet",
+            "desc" => "LaundryCare.Dryer.Event.Maintenance.DrainSet",
+            "level" => "hint"
+        ],
+        [
+            "uid" => 17678,
+            "name" => "LaundryCare.Dryer.Event.Maintenance.QuickFillWater",
+            "desc" => "LaundryCare.Dryer.Event.Maintenance.QuickFillWater",
+            "level" => "hint"
+        ],
+        [
+            "uid" => 17673,
+            "name" => "LaundryCare.Dryer.Event.Maintenance.Remind",
+            "desc" => "LaundryCare.Dryer.Event.Maintenance.Remind",
+            "level" => "warning"
+        ],
+        [
+            "uid" => 17667,
+            "name" => "LaundryCare.Dryer.Event.RefresherContainerEmpty",
+            "desc" => "LaundryCare.Dryer.Event.RefresherContainerEmpty",
+            "level" => "alert"
+        ]
+    ];
+
     public function Create()
     {
         //Never delete this line!
@@ -75,6 +264,10 @@ class HomeConnectLocalDryer extends HCLDevice
             
             $powerStateBool = $powerState === self::VALUE_POWERSTATE_ON ? true : false;
             $this->SetValue("Power", $powerStateBool);
+
+            // handle events
+            $this->HCLHandleEvents(self::EVENTS, $payload);
+
             /*
             // @TODO: figure out how to send commands
             if($powerStateBool) {
