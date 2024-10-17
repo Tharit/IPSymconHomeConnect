@@ -23,6 +23,9 @@ class HomeConnectLocalOven extends HCLDevice
     ];
 
     const UID_STATUS_CURRENTCAVITYTEMPERATURE = 4096;
+    const UID_STATUS_CURRENTMEATPROBETEMPERATURE = 4097;
+    const UID_STATUS_MEATPROBEPLUGGED = 4100;
+    const UID_STATUS_MEATPROBETEMPERATURE = 5121;
     
     const UID_OPTION_SETPOINTTEMPERATURE = 5120;
 
@@ -235,6 +238,10 @@ class HomeConnectLocalOven extends HCLDevice
             $currentCavityTemperature = $this->HCLGet($state, self::UID_STATUS_CURRENTCAVITYTEMPERATURE, 0);
             $setpointTemperature = $this->HCLGet($state, self::UID_OPTION_SETPOINTTEMPERATURE, 0);
 
+            $currentMeatprobeTemperature = $this->HCLGet($state, self::UID_STATUS_CURRENTMEATPROBETEMPERATURE, 0);
+            $meatprobeTemperature = $this->HCLGet($state, self::UID_STATUS_MEATPROBETEMPERATURE, 0);
+            $meatprobePlugged = $this->HCLGet($state, self::UID_STATUS_MEATPROBEPLUGGED, false);
+
             $this->SetValue("CurrentCavityTemperature", $currentCavityTemperature);
             $this->SetValue("Power", $powerState === self::VALUE_POWERSTATE_ON ? true : false);
 
@@ -246,7 +253,9 @@ class HomeConnectLocalOven extends HCLDevice
                 if($operationState === self::VALUE_OPERATIONSTATE_DELAYEDSTART) {
                     $state = 'Start in ' . $this->HCLFormatDuration($startInRelative);
                 } else if($operationState === self::VALUE_OPERATIONSTATE_RUN) {
-                    if($duration) {
+                    if($meatprobePlugged)
+                    $state = 'Running (' . floor($currentMeatprobeTemperature) . '/' . $meatprobeTemperature . ')';
+                    } else if($duration) {
                         $state = $this->HCLFormatDuration($remainingProgramTime) . ' remaining';
                     } else if(!in_array($activeProgram, self::VALUE_PROGRAMS_MICROWAVE) &&
                          $currentCavityTemperature < $setpointTemperature) {
