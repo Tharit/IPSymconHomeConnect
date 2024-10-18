@@ -207,7 +207,7 @@ class HomeConnectLocalDishwasher extends HCLDevice
             $this->SetValue("Power", $powerState === self::VALUE_POWERSTATE_ON ? true : false);
 
             if($doorState !== self::VALUE_DOORSTATE_CLOSED) {
-                $state = $this->HCLDoorStateToString('Door open');
+                $state = $this->HCLDoorStateToString($doorState);
             } else if($powerState !== self::VALUE_POWERSTATE_ON) {
                 $state = 'Off';
             } else {
