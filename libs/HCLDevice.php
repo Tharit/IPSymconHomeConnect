@@ -111,6 +111,19 @@ class HCLDevice extends IPSModule {
         if(isset($state[$uid])) return $state[$uid];
         return $default;
     }
+
+    public function GetValue($value) {
+        $values = file_get_contents('./values.json');
+        if(!isset($values[$value])) return null;
+        $uid = $values[$value];
+        $state = $this->HCLState();
+        if(!isset($state[$uid])) return null;
+        return $state[$uid];
+    }
+    
+    protected function HCLGetState() {
+        return $this->MUGetBuffer('State');
+    }
     
     protected function HCLUpdateState($payload) {
         $state = $this->MUGetBuffer('State');
