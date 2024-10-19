@@ -2,6 +2,8 @@
 
 class HCLDevice extends IPSModule {
 
+    static $values = null;
+
     // generic
     const UID_ACTIVEPROGRAM = 256;
     
@@ -113,7 +115,10 @@ class HCLDevice extends IPSModule {
     }
 
     public function GetValue($value) {
-        $values = file_get_contents('./values.json');
+        if(!self::$values) {
+            self::$values = json_decode(file_get_contents('./values.json'), true;
+        }
+        $values = self::$values;
         if(!isset($values[$value])) return null;
         $uid = $values[$value];
         $state = $this->HCLState();
