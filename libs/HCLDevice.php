@@ -121,7 +121,7 @@ class HCLDevice extends IPSModule {
         $values = self::$values;
         if(!isset($values[$value])) return null;
         $uid = $values[$value];
-        $state = $this->HCLState();
+        $state = $this->HCLGetState();
         if(!isset($state[$uid])) return null;
         return $state[$uid];
     }
