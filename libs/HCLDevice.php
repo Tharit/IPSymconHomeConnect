@@ -114,7 +114,7 @@ class HCLDevice extends IPSModule {
         return $default;
     }
 
-    public function GetValue(string $value) {
+    public function GetDeviceValue(string $value) {
         if(!self::$values) {
             self::$values = json_decode(file_get_contents('./values.json'), true);
         }
