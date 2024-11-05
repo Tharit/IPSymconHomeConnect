@@ -255,7 +255,7 @@ class HomeConnectLocalOven extends HCLDevice
                 } else if($operationState === self::VALUE_OPERATIONSTATE_RUN) {
                     if($meatprobePlugged) {
                         $state = 'Running (' . floor($currentMeatprobeTemperature) . '/' . $meatprobeTemperature . ')';
-                    } else if($duration) {
+                    } else if($duration) { // @TODO: this is apparently not cleared when starting another program.. how to fix?
                         $state = $this->HCLFormatDuration($remainingProgramTime) . ' remaining';
                     } else if(!in_array($activeProgram, self::VALUE_PROGRAMS_MICROWAVE) &&
                          $currentCavityTemperature < $setpointTemperature) {
