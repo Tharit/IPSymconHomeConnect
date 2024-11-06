@@ -94,6 +94,7 @@ class HCLDevice extends IPSModule {
         $this->MUSetBuffer('DaemonConnected', false);
         $this->MUSetBuffer('DeviceConnected', false);
         $this->MUSetBuffer('State', []);
+        $this->MUSetBuffer('Timestamps', []);
     }
 
     protected function HCLUpdateConnected($topic, $payload) {
@@ -114,6 +115,12 @@ class HCLDevice extends IPSModule {
         return $default;
     }
 
+    protected function HCLGetTimestamp($uid) {
+        $timestamps = $this->HCLGetTimestamps();
+        if(isset($timestamps[$uid])) return $timestamps[$uid];
+        return 0;
+    }
+
     public function GetDeviceValue(string $value) {
         if(!self::$values) {
             self::$values = json_decode(file_get_contents(__DIR__  . '/values.json'), true);
@@ -125,17 +132,37 @@ class HCLDevice extends IPSModule {
         if(!isset($state[$uid])) return null;
         return $state[$uid];
     }
+
+    public function GetDeviceTimestamp(string $value) {
+        if(!self::$values) {
+            self::$values = json_decode(file_get_contents(__DIR__  . '/values.json'), true);
+        }
+        $values = self::$values;
+        if(!isset($values[$value])) return null;
+        $uid = $values[$value]['uid'];
+        $timestamps = $this->HCLGetTimestamps();
+        if(!isset($timestamps[$uid])) return null;
+        return $timestamps[$uid];
+    }
     
-    protected function HCLGetState() {
+    private function HCLGetState() {
         return $this->MUGetBuffer('State');
+    }
+
+    private function HCLGetTimestamps() {
+        return $this->MUGetBuffer('Timestamps');
     }
     
     protected function HCLUpdateState($payload) {
         $state = $this->MUGetBuffer('State');
+        $timestamps = $this->MUGetBuffer('Timestamps');
+        $now = time();
         foreach($payload as $key => $value) {
             $state[$key] = $value;
+            $timestamps[$key] = $now;
         }
         $this->MUSetBuffer('State', $state);
+        $this->MUSetBuffer('Timestamps', $timestamps);
         return $state;
     }
 
