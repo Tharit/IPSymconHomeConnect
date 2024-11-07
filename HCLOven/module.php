@@ -182,7 +182,7 @@ class HomeConnectLocalOven extends HCLDevice
         $this->RegisterPropertyInteger('script', '0');
 
         // variables
-        $this->RegisterVariableBoolean("Connected", "Connected", "", 0);
+        $this->RegisterVariableInteger("Connected", "Connected", "", 0);
         $this->RegisterVariableBoolean("Power", "Power", "~Switch", 1);
         $this->RegisterVariableString("State", "State", "", 2);
         $this->RegisterVariableFloat("CurrentCavityTemperature", "Temperature", "~Temperature", 3);
@@ -245,8 +245,8 @@ class HomeConnectLocalOven extends HCLDevice
             $this->SetValue("CurrentCavityTemperature", $currentCavityTemperature);
             $this->SetValue("Power", $powerState === self::VALUE_POWERSTATE_ON ? true : false);
 
-            if($doorState !== self::VALUE_DOORSTATE_CLOSED) {
-                $state = 'Door open';
+            if($doorState !== self::VALUE_DOORSTATE_CLOSED && $doorState !== self::VALUE_DOORSTATE_LOCKED) {
+                $state = 'Door ' . $this->HCLDoorStateToString($doorState);
             } else if($powerState !== self::VALUE_POWERSTATE_ON) {
                 $state = 'Off';
             } else {

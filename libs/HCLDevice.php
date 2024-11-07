@@ -91,21 +91,22 @@ class HCLDevice extends IPSModule {
     }
 
     protected function HCLInit() {
-        $this->MUSetBuffer('DaemonConnected', false);
-        $this->MUSetBuffer('DeviceConnected', false);
         $this->MUSetBuffer('State', []);
         $this->MUSetBuffer('Timestamps', []);
     }
 
     protected function HCLUpdateConnected($topic, $payload) {
-        $connected = $payload === 'online' ? true : false;
+        $connected = $this->GetValue('Connected');
+
+        $daemon = ($connected & 1);
+        $device = ($connected & 2);
+        
         if($topic === $this->ReadPropertyString('Topic') . '/LWT') {
-            $this->MUSetBuffer('DeviceConnected', $connected);
-            $connected = $connected && $this->MUGetBuffer('DaemonConnected');
+            $device = $payload === 'online' ? 2 : 0;
         } else {
-            $this->MUSetBuffer('DaemonConnected', $connected);
-            $connected = $connected && $this->MUGetBuffer('DeviceConnected');
+            $daemon = $payload === 'online' ? 1 : 0;
         }
+        $connected = $daemon | $device;
         $this->SetValue("Connected", $connected);
         return $connected;
     }

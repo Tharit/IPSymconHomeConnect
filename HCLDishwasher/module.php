@@ -154,7 +154,7 @@ class HomeConnectLocalDishwasher extends HCLDevice
         $this->RegisterPropertyInteger('script', '0');
 
         // variables
-        $this->RegisterVariableBoolean("Connected", "Connected", "", 0);
+        $this->RegisterVariableInteger("Connected", "Connected", "", 0);
         $this->RegisterVariableBoolean("Power", "Power", "~Switch", 1);
         $this->RegisterVariableString("State", "State", "", 2);
 

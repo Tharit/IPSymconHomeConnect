@@ -184,7 +184,7 @@ class HomeConnectLocalWasher extends HCLDevice
         ]);
 
         // variables
-        $this->RegisterVariableBoolean("Connected", "Connected", "", 0);
+        $this->RegisterVariableInteger("Connected", "Connected", "", 0);
         $this->RegisterVariableBoolean("Power", "Power", "HomeConnectLocalWasher.Power", 1);
         $this->RegisterVariableString("State", "State", "", 2);
 
