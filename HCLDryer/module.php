@@ -281,7 +281,10 @@ class HomeConnectLocalDryer extends HCLDevice
             }
                 */
 
-            if($doorState !== self::VALUE_DOORSTATE_CLOSED && $doorState !== self::VALUE_DOORSTATE_LOCKED) {
+            // device sometimes fails to report powerstate correctly before turning off (mainsoff)
+            if($this->GetValue('Connected') == 1) {
+                $state = 'Off';
+            } else if($doorState !== self::VALUE_DOORSTATE_CLOSED && $doorState !== self::VALUE_DOORSTATE_LOCKED) {
                 $state = 'Door ' . $this->HCLDoorStateToString($doorState);
             } else if($powerState !== self::VALUE_POWERSTATE_ON) {
                 $state = 'Off';
