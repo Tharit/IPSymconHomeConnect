@@ -215,7 +215,7 @@ class HomeConnectLocalWasher extends HCLDevice
 
         if (fnmatch('*/LWT', $Buffer->Topic)) {
             $connected = $this->HCLUpdateConnected($Buffer->Topic, $Buffer->Payload);
-            if(!$connected) {
+            if($connected !== 2) {
                 $this->SetValue("Power", false);
                 $this->SetValue("State", 'Off');
             }
