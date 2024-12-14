@@ -264,6 +264,6 @@ class HomeConnectLocalHood extends HCLDevice
     }
 
     public function ResetGreaseFilter() {
-        $this->SendRequest(self::UID_SETTING_GREASEFILTERRESET, true);
+        $this->HCLSendRequest(self::UID_SETTING_GREASEFILTERRESET, true);
     }
 }
