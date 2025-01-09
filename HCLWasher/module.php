@@ -204,6 +204,53 @@ class HomeConnectLocalWasher extends HCLDevice
         $this->HCLRequestUpdate();
     }
 
+    private function UpdateState($state) {
+        $powerState = $this->HCLGet($state, self::UID_SETTING_POWERSTATE, self::VALUE_POWERSTATE_STANDBY);
+        $operationState = $this->HCLGet($state, self::UID_STATUS_OPERATIONSTATE, self::VALUE_OPERATIONSTATE_INACTIVE);
+        $activeProgram = $this->HCLGet($state, self::UID_ACTIVEPROGRAM, 0);
+
+        $doorState = $this->HCLGet($state, self::UID_STATUS_DOORSTATE, self::VALUE_DOORSTATE_CLOSED);
+        
+        $remainingProgramTime = $this->HCLGet($state, self::UID_OPTION_REMAININGPROGRAMTIME, 0);
+        
+        $estimatedTotalProgramTime = $this->HCLGet($state, self::UID_OPTION_ESTIMATEDTOTALPROGRAMTIME, 0);
+        $finishInRelative = $this->HCLGet($state, self::UID_OPTION_FINISHINRELATIVE, 0);
+        
+        $powerStateBool = $powerState === self::VALUE_POWERSTATE_ON && $this->GetValue('Connected') === 2 ? true : false;
+        $this->SetValue("Power", $powerStateBool);
+        /*
+        // @TODO: figure out how to send commands
+        if($powerStateBool) {
+        $this->EnableAction("Power");
+        } else {
+        $this->DisableAction("Power");
+        }
+        */
+
+        // device sometimes fails to report powerstate correctly before turning off (mainsoff)
+        if($this->GetValue('Connected') == 1) {
+            $state = 'Off';
+        } else if($doorState !== self::VALUE_DOORSTATE_CLOSED && $doorState !== self::VALUE_DOORSTATE_LOCKED) {
+            $state = 'Door ' . $this->HCLDoorStateToString($doorState);
+        } else if($powerState !== self::VALUE_POWERSTATE_ON) {
+            $state = 'Off';
+        } else {
+            if($operationState === self::VALUE_OPERATIONSTATE_DELAYEDSTART) {
+                $state = 'Start in ' . $this->HCLFormatDuration($finishInRelative - $estimatedTotalProgramTime);
+            } else if($operationState === self::VALUE_OPERATIONSTATE_RUN) {
+                if($remainingProgramTime) {
+                    $state = $this->HCLFormatDuration($remainingProgramTime) . ' remaining';
+                } else {
+                    //@TODO if event finished is set, show finished here
+                    $state = 'Running';
+                }
+            } else {
+                $state = $this->HCLOperationStateToString($operationState);
+            }
+        }
+        $this->SetValue("State", $state);
+    }
+
     public function ReceiveData($JSONString)
     {
         $this->SendDebug('JSON', $JSONString, 0);
@@ -215,10 +262,20 @@ class HomeConnectLocalWasher extends HCLDevice
 
         if (fnmatch('*/LWT', $Buffer->Topic)) {
             $connected = $this->HCLUpdateConnected($Buffer->Topic, $Buffer->Payload);
+            // workaround: device sometimes does not correctly report powerstate when turning off/on
+            // we know:
+            // - off = power off (mains off) = no connection
+            // - no standby mode
+            // => set powerstate based on connection
             if($connected !== 2) {
-                $this->SetValue("Power", false);
-                $this->SetValue("State", 'Off');
+                $power = self::VALUE_POWERSTATE_MAINSOFF;
+            } else {
+                $power = self::VALUE_POWERSTATE_ON;
             }
+            $state = $this->HCLUpdateState([
+                self::UID_SETTING_POWERSTATE => $power
+            ]);
+            $this->UpdateState($state);
         } else {
             $payload = json_decode($Buffer->Payload, true);
 
@@ -226,51 +283,7 @@ class HomeConnectLocalWasher extends HCLDevice
             $this->HCLHandleEvents(self::EVENTS, $payload);
 
             $state = $this->HCLUpdateState($payload);
-
-            $powerState = $this->HCLGet($state, self::UID_SETTING_POWERSTATE, self::VALUE_POWERSTATE_STANDBY);
-            $operationState = $this->HCLGet($state, self::UID_STATUS_OPERATIONSTATE, self::VALUE_OPERATIONSTATE_INACTIVE);
-            $activeProgram = $this->HCLGet($state, self::UID_ACTIVEPROGRAM, 0);
-
-            $doorState = $this->HCLGet($state, self::UID_STATUS_DOORSTATE, self::VALUE_DOORSTATE_CLOSED);
-            
-            $remainingProgramTime = $this->HCLGet($state, self::UID_OPTION_REMAININGPROGRAMTIME, 0);
-            
-            $estimatedTotalProgramTime = $this->HCLGet($state, self::UID_OPTION_ESTIMATEDTOTALPROGRAMTIME, 0);
-            $finishInRelative = $this->HCLGet($state, self::UID_OPTION_FINISHINRELATIVE, 0);
-            
-            $powerStateBool = $powerState === self::VALUE_POWERSTATE_ON && $this->GetValue('Connected') === 2 ? true : false;
-            $this->SetValue("Power", $powerStateBool);
-            /*
-            // @TODO: figure out how to send commands
-            if($powerStateBool) {
-                $this->EnableAction("Power");
-            } else {
-                $this->DisableAction("Power");
-            }
-                */
-
-            // device sometimes fails to report powerstate correctly before turning off (mainsoff)
-            if($this->GetValue('Connected') == 1) {
-                $state = 'Off';
-            } else if($doorState !== self::VALUE_DOORSTATE_CLOSED && $doorState !== self::VALUE_DOORSTATE_LOCKED) {
-                $state = 'Door ' . $this->HCLDoorStateToString($doorState);
-            } else if($powerState !== self::VALUE_POWERSTATE_ON) {
-                $state = 'Off';
-            } else {
-                if($operationState === self::VALUE_OPERATIONSTATE_DELAYEDSTART) {
-                    $state = 'Start in ' . $this->HCLFormatDuration($finishInRelative - $estimatedTotalProgramTime);
-                } else if($operationState === self::VALUE_OPERATIONSTATE_RUN) {
-                    if($remainingProgramTime) {
-                        $state = $this->HCLFormatDuration($remainingProgramTime) . ' remaining';
-                    } else {
-                        //@TODO if event finished is set, show finished here
-                        $state = 'Running';
-                    }
-                } else {
-                    $state = $this->HCLOperationStateToString($operationState);
-                }
-            }
-            $this->SetValue("State", $state);
+            $this->UpdateState($state);
         }
     }
 
