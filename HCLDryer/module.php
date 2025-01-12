@@ -271,7 +271,7 @@ class HomeConnectLocalDryer extends HCLDevice
             } else if($operationState === self::VALUE_OPERATIONSTATE_RUN) {
                 // if event LaundryCare.Dryer.Event.DryingProcessFinished is set, show finished here
                 if($this->HCLGet($state, self::EVENT_DRYINGPROCESSFINISHED, 0) === 1) {
-                    $state = 'Drying finished (Anti-crease)';
+                    $state = 'Drying finished - Anti-crease';
                 } else if($remainingProgramTime) {
                     $state = 'Running - ' . $this->HCLFormatDuration($remainingProgramTime) . ' remaining';
                 } else {
