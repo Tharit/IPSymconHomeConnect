@@ -247,7 +247,7 @@ class HomeConnectLocalDryer extends HCLDevice
         $remainingProgramTime = $this->HCLGet($state, self::UID_OPTION_REMAININGPROGRAMTIME, 0);
         $finishInRelative = $this->HCLGet($state, self::UID_OPTION_FINISHINRELATIVE, 0);
         
-        $powerStateBool = $powerState === self::VALUE_POWERSTATE_ON && $this->GetValue('Connected') === 2 ? true : false;
+        $powerStateBool = $powerState === self::VALUE_POWERSTATE_ON && $this->GetValue('Connected') === 3 ? true : false;
         $this->SetValue("Power", $powerStateBool);
         /*
         // @TODO: figure out how to send commands
@@ -300,7 +300,7 @@ class HomeConnectLocalDryer extends HCLDevice
             // - off = power off (mains off) = no connection
             // - no standby mode
             // => set powerstate based on connection
-            if($connected !== 2) {
+            if($connected !== 3) {
                 $power = self::VALUE_POWERSTATE_MAINSOFF;
             } else {
                 $power = self::VALUE_POWERSTATE_ON;
