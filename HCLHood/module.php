@@ -228,7 +228,7 @@ class HomeConnectLocalHood extends HCLDevice
                         $details = 'Level ' . $ventingLevel;
                     // interval or fan run on
                     } else if($activeProgram === self::UID_PROGRAM_INTERVAL || $activeProgram === self::UID_PROGRAM_DELAYEDSHUTOFF) {
-                        $details .= ' (' . $this->HCLFormatDuration($remainingProgramTime) . ' remaining)';
+                        $details .= ' - ' . $this->HCLFormatDuration($remainingProgramTime) . ' remaining';
                     }
                     $state = $details;
                 } else {

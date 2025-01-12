@@ -255,14 +255,14 @@ class HomeConnectLocalOven extends HCLDevice
                     $state = 'Start in ' . $this->HCLFormatDuration($startInRelative);
                 } else if($operationState === self::VALUE_OPERATIONSTATE_RUN) {
                     if($meatprobePlugged) {
-                        $state = 'Running (' . floor($currentMeatprobeTemperature) . '/' . $meatprobeTemperature . ' °C)';
+                        $state = 'Running - ' . floor($currentMeatprobeTemperature) . '/' . $meatprobeTemperature . ' °C';
                     } else if($showRemaining) {
                         $state = $this->HCLFormatDuration($remainingProgramTime) . ' remaining';
                     } else if(!in_array($activeProgram, self::VALUE_PROGRAMS_MICROWAVE) &&
                         $currentCavityTemperature < $setpointTemperature) {
-                        $state = 'Preheating (' . floor($currentCavityTemperature) . '/' . $setpointTemperature . ' °C)';
+                        $state = 'Preheating - ' . floor($currentCavityTemperature) . '/' . $setpointTemperature . ' °C';
                     } else if($elapsedProgramTime) {
-                        $state = $this->HCLFormatDuration($elapsedProgramTime) . ' elapsed';
+                        $state = 'Running - ' . $this->HCLFormatDuration($elapsedProgramTime) . ' elapsed';
                     } else {
                         $state = 'Running';
                     }

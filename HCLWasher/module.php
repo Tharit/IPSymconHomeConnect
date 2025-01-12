@@ -239,7 +239,7 @@ class HomeConnectLocalWasher extends HCLDevice
                 $state = 'Start in ' . $this->HCLFormatDuration($finishInRelative - $estimatedTotalProgramTime);
             } else if($operationState === self::VALUE_OPERATIONSTATE_RUN) {
                 if($remainingProgramTime) {
-                    $state = 'Running (' . $this->HCLFormatDuration($remainingProgramTime) . ' remaining)';
+                    $state = 'Running - ' . $this->HCLFormatDuration($remainingProgramTime) . ' remaining';
                 } else {
                     //@TODO if event finished is set, show finished here
                     $state = 'Running';

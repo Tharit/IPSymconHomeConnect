@@ -215,7 +215,7 @@ class HomeConnectLocalDishwasher extends HCLDevice
                     $state = 'Start in ' . $this->HCLFormatDuration($startInRelative);
                 } else if($operationState === self::VALUE_OPERATIONSTATE_RUN) {
                     if($remainingProgramTime) {
-                        $state = $this->HCLFormatDuration($remainingProgramTime) . ' remaining';
+                        $state = 'Running - ' . $this->HCLFormatDuration($remainingProgramTime) . ' remaining';
                     } else {
                         $state = 'Running';
                     }

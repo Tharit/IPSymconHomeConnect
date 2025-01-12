@@ -273,7 +273,7 @@ class HomeConnectLocalDryer extends HCLDevice
                 if($this->HCLGet($state, self::EVENT_DRYINGPROCESSFINISHED, 0) === 1) {
                     $state = 'Drying finished (Anti-crease)';
                 } else if($remainingProgramTime) {
-                    $state = 'Running (' . $this->HCLFormatDuration($remainingProgramTime) . ' remaining)';
+                    $state = 'Running - ' . $this->HCLFormatDuration($remainingProgramTime) . ' remaining';
                 } else {
                     $state = 'Running';
                 }
