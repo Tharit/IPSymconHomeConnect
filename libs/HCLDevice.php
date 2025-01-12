@@ -170,7 +170,13 @@ class HCLDevice extends IPSModule {
     protected function HCLFormatDuration($duration) {
         $minutes = floor(($duration % 3600) / 60);
         $hours = floor($duration / 3600);
-        $value = str_pad($hours, 2, '0', STR_PAD_LEFT) . ':' . str_pad($minutes, 2, '0', STR_PAD_LEFT) . 'h';
+        $value = '';
+        if($hours > 0) {
+            $value .= $hours . 'h';
+        }
+        if($minutes > 0) {
+            $value .= $minutes . 'm';
+        }
         return $value;
     }
 
